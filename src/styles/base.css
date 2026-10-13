@@ -1,0 +1,107 @@
+/* Values measured on dailywire.com/videos/confession (Oct 2026). */
+:root {
+  --bg: #0a0909;
+  --ink: #fafafa;
+  --soft: #b8b8b8;
+  --mute: #8f8f8f;
+  --dim: #5c5c5c;
+  --s1: #121212;
+  --s2: #181818;
+  --s3: #212121;
+  --s4: #2b2b2b;
+  --s5: #363636;
+  --line: rgba(255, 255, 255, 0.09);
+  --wash: rgba(255, 255, 255, 0.08);
+  --red: #db3d3b;
+  --red-hi: #e74d4a;
+  --red-ink: #f2584f;
+  --red-tint: rgba(219, 61, 59, 0.14);
+  --ok: #52c78e;
+  --ok-tint: rgba(82, 199, 142, 0.13);
+  --m: 44px;
+  --nav: 64px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 4px 16px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+@media (max-width: 760px) {
+  :root { --m: 16px; --nav: 56px; }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 80px; }
+html.locked { overflow: hidden; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.5 'Libre Franklin', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+img { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+button:disabled { cursor: default; }
+input { font: inherit; color: inherit; }
+a { color: inherit; text-decoration: none; }
+p, h1, h2, h3 { margin: 0; }
+hr { border: 0; height: 1px; background: var(--line); margin: 40px 0; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+::selection { background: var(--red); color: #fff; }
+
+.serif { font-family: 'Libre Caslon Text', ui-serif, Georgia, serif; }
+.eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--mute); }
+.eyebrow.red { color: var(--red-ink); }
+.sec-h { font-size: 40px; line-height: 1.06; font-weight: 600; letter-spacing: -0.022em; margin-top: 12px; text-wrap: balance; }
+.h2 { font-size: 16px; line-height: 1; font-weight: 600; margin-bottom: 24px; }
+.label { font-size: 16px; line-height: 1; color: var(--mute); margin-bottom: 16px; font-weight: 400; }
+@media (max-width: 760px) { .sec-h { font-size: 30px; } }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 52px; padding: 0 22px; border-radius: 4px;
+  font-size: 16px; font-weight: 600; line-height: 1; white-space: nowrap;
+  transition: background 0.2s, color 0.2s, transform 0.2s var(--ease), opacity 0.2s;
+}
+.btn:active { transform: scale(0.985); }
+.btn-w { background: var(--ink); color: #000; }
+.btn-w:hover { background: #fff; }
+.btn-r { background: var(--red); color: #fff; }
+.btn-r:hover { background: var(--red-hi); }
+.btn-g { background: var(--wash); color: var(--ink); }
+.btn-g:hover { background: rgba(255, 255, 255, 0.14); }
+.btn.sm { height: 40px; padding: 0 14px; font-size: 14px; gap: 6px; }
+.btn.big { height: 60px; font-size: 17px; }
+.btn.block { display: flex; width: 100%; }
+.link-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--soft); transition: color 0.2s; }
+.link-btn:hover { color: var(--ink); }
+.link-btn.strong { color: var(--ink); }
+.icon-btn { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 999px; color: var(--ink); transition: background 0.2s; }
+.icon-btn:hover { background: var(--wash); }
+.icon-btn.ghost { pointer-events: none; }
+.back-btn { display: inline-flex; align-items: center; gap: 4px; margin-left: -4px; height: 36px; padding: 0 8px 0 4px; border-radius: 4px; font-size: 14px; font-weight: 600; color: var(--soft); transition: color 0.2s, background 0.2s; }
+.back-btn:hover { color: var(--ink); background: var(--wash); }
+
+.spin { width: 16px; height: 16px; flex: none; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.18); border-top-color: var(--red-ink); animation: spin 0.8s linear infinite; }
+.spin.dark { border-color: rgba(0, 0, 0, 0.15); border-top-color: #000; }
+
+/* The DW wordmark is one-colour artwork, painted with the text colour. */
+.wordmark { display: block; background: var(--ink); -webkit-mask: var(--logo) center / contain no-repeat; mask: var(--logo) center / contain no-repeat; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fade { from { opacity: 0; } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes drop { from { opacity: 0; transform: translateY(-8px); } }
+@keyframes slide-in { from { opacity: 0; transform: translateX(24px); } }
+@keyframes sheet-up { from { transform: translateY(40px); opacity: 0; } }
+@keyframes pop { 0% { opacity: 0; transform: translateY(4px); } 100% { opacity: 1; transform: none; } }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@keyframes pulse { 0%, 100% { transform: scale(0.7); opacity: 0.9; } 50% { transform: scale(1.25); opacity: 0.25; } }
+@keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+@keyframes lit { from { opacity: 0; transform: scale(0.2); } }
+@keyframes nudge { 0%, 100% { transform: none; } 30% { transform: translateY(-6px); } 60% { transform: translateY(1px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
