@@ -44,7 +44,7 @@ function writeUrl(opt: number, user: User) {
   const q = new URLSearchParams(location.search);
   if (opt) q.set('o', String(opt)); else q.delete('o');
   q.set('u', user);
-  history.replaceState(null, '', `${location.pathname}?${q}`);
+  try { history.replaceState(null, '', `${location.pathname}?${q}`); } catch { /* sandboxed hosts */ }
 }
 
 const blank = { zip: '', phase: 'idle' as Phase, found: null, pick: null, done: false, checkout: null, chat: false, joined: false, page: 'show' as const };

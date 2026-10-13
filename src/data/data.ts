@@ -1,15 +1,16 @@
 // Everything the prototype pretends to know. Theaters, prices and the plan are placeholders until the
 // inventory sheet and the promo plan land; the numbers live here so they change in one place.
 
-const IMGIX = 'https://dailywireplus-v2.imgix.net/images';
+// Film art from the DailyWire+ image CDN, saved with the project so the prototype works offline
+// and inside sandboxed hosts that block outside images.
+import wide from './film/hero-wide.jpg';
+import tall from './film/hero-tall.jpg';
+import title from './film/title.png';
+import poster from './film/poster.jpg';
+import teaser from './film/teaser.jpg';
 
-export const ART = {
-  wide: `${IMGIX}/movies/f1fb9437-170f-4b69-9e87-f437d24e7ed7.png?w=2400&auto=format`,
-  tall: `${IMGIX}/movies/e1fc1847-a973-4850-9f1c-b1b3fb9d9f98.png?w=900&auto=format`,
-  title: `${IMGIX}/movies/15cd83a9-4916-4856-9d83-3b7a1c8f4c4b.png?w=750&auto=format`,
-  poster: `${IMGIX}/movies/c579e882-0e83-4df2-a308-d07dc9cfda1a.png?w=900&auto=format`,
-  teaser: `${IMGIX}/extras/2408c326-796e-43a9-9151-f834d9b23c8a.png?w=900&auto=format`,
-};
+export const ART = { wide, tall, title, poster, teaser };
+const FACES = Object.values(import.meta.glob('./film/cast-*.jpg', { eager: true, import: 'default' })) as string[];
 
 export const CAST = [
   ['James Franco', '18c96d6d-91f5-40d7-b165-8105ab7acd91'],
@@ -20,7 +21,7 @@ export const CAST = [
   ['Emile Hirsch', '648430c0-3356-48e2-b31f-3f260ad84dc2'],
   ['Jennifer Jason Leigh', '18f1e5f0-5db4-4374-b234-b29155e32c1a'],
   ['Nick Nolte', 'da850bdb-ed3f-42f1-a0f6-c0bc01484fde'],
-].map(([name, id]) => ({ name, img: `${IMGIX}/cast-and-crew/${id}.png?w=240&h=240&fit=crop&crop=faces&auto=format` }));
+].map(([name], i) => ({ name, img: FACES[i] }));
 
 export const SYNOPSIS =
   'In Stalin’s 1938 Moscow, a disillusioned former literature professor, Alexei, is arrested and brought to the infamous Lubyanka Prison, charged with conspiring with his dissident priest. There, Alexei faces interrogation by his brilliant and brutal former student, Vladimir.';

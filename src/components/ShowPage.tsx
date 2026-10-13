@@ -7,7 +7,7 @@ import { useFlow, useTier } from '../store';
 import { Icon } from './Icon';
 
 export function Wordmark({ className = '' }: { className?: string }) {
-  return <span className={'wordmark ' + className} role="img" aria-label="Daily Wire" style={{ ['--logo' as string]: `url(${logo})` }} />;
+  return <span className={'wordmark ' + className} role="img" aria-label="Daily Wire" style={{ ['--logo' as string]: `url("${logo}")` }} />;
 }
 
 const LINKS = ['News', 'Shows & Movies', 'All Access', 'Sport & State', 'The Midterms'];
