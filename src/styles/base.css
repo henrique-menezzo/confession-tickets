@@ -19,6 +19,9 @@
   --ok: #52c78e;
   --ok-tint: rgba(82, 199, 142, 0.13);
   --m: 44px;
+  /* content never grows past 1375px; past that the side gutter grows and everything stays centered */
+  --col: 1375px;
+  --gut: max(var(--m), calc((100% - var(--col)) / 2));
   --nav: 64px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 4px 16px rgba(0, 0, 0, 0.35);

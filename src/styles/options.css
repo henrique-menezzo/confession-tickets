@@ -1,5 +1,5 @@
 /* Index */
-.ix { max-width: 1440px; margin: 0 auto; padding: 0 var(--m) 120px; }
+.ix { max-width: calc(var(--col) + 2 * var(--m)); margin: 0 auto; padding: 0 var(--m) 120px; }
 .ix-top { height: 64px; display: flex; align-items: center; gap: 16px; font-size: 13px; color: var(--mute); }
 .ix-logo { width: 128px; height: 12px; }
 .ix-hero { padding: 48px 0 44px; max-width: 900px; }
@@ -30,7 +30,7 @@
 .ix-fine { margin-top: 28px; font-size: 13px; color: var(--mute); }
 
 /* 01 · Tickets section */
-.o1 { padding: 96px var(--m) 8px; scroll-margin-top: 40px; }
+.o1 { padding: 96px var(--gut) 8px; scroll-margin-top: 40px; }
 .o1-head { display: grid; grid-template-columns: minmax(0, 1fr) 520px; gap: 64px; align-items: end; margin-bottom: 40px; }
 .o1-date { margin-top: 14px; font-size: 20px; color: var(--soft); }
 .o1-search .zip-under { margin-top: 10px; }
@@ -42,7 +42,7 @@
 .o2-ask { margin-bottom: 12px; font-size: 15px; font-weight: 600; }
 .o2-under { margin-top: 16px; max-width: 600px; }
 .o2-under .perk { font-size: 14px; }
-.o2-panel { position: absolute; z-index: 3; right: var(--m); top: calc(var(--nav) + 24px); max-height: calc(100% - var(--nav) - 76px); width: 452px; display: flex; flex-direction: column; border-radius: 12px; background: rgba(14, 13, 13, 0.84); backdrop-filter: blur(20px) saturate(1.2); -webkit-backdrop-filter: blur(20px) saturate(1.2); box-shadow: var(--shadow); overflow: hidden; animation: slide-in 0.45s var(--ease) both; }
+.o2-panel { position: absolute; z-index: 3; right: var(--gut); top: calc(var(--nav) + 24px); max-height: calc(100% - var(--nav) - 76px); width: 452px; display: flex; flex-direction: column; border-radius: 12px; background: rgba(14, 13, 13, 0.84); backdrop-filter: blur(20px) saturate(1.2); -webkit-backdrop-filter: blur(20px) saturate(1.2); box-shadow: var(--shadow); overflow: hidden; animation: slide-in 0.45s var(--ease) both; }
 .o2-ph { display: flex; align-items: center; justify-content: space-between; padding: 12px 12px 4px 20px; min-height: 52px; }
 .o2-pt { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--mute); }
 .o2-pb { flex: 1; overflow-y: auto; padding: 6px 20px 20px; animation: fade 0.3s ease both; }
@@ -103,7 +103,7 @@
 .o4 .searching { text-align: left; }
 
 /* 05 · Build your ticket */
-.o5 { display: grid; grid-template-columns: 400px minmax(0, 1fr); gap: 80px; align-items: start; padding: 96px var(--m) 8px; scroll-margin-top: 40px; }
+.o5 { display: grid; grid-template-columns: 400px minmax(0, 1fr); gap: 80px; align-items: start; padding: 96px var(--gut) 8px; scroll-margin-top: 40px; }
 .o5-left { position: sticky; top: calc(var(--nav) + 24px); }
 .stub {
   --cut: calc(100% - 128px);
@@ -146,7 +146,7 @@
 .o5-do { display: flex; flex-direction: column; gap: 12px; max-width: 460px; animation: fade 0.35s ease both; }
 
 /* 06 · Map */
-.o6 { display: grid; grid-template-columns: 430px minmax(0, 1fr); margin: 96px var(--m) 8px; min-height: 660px; border-radius: 14px; background: var(--s1); overflow: hidden; scroll-margin-top: 80px; }
+.o6 { display: grid; grid-template-columns: 430px minmax(0, 1fr); margin: 96px var(--gut) 8px; min-height: 660px; border-radius: 14px; background: var(--s1); overflow: hidden; scroll-margin-top: 80px; }
 .o6-side { padding: 36px 32px; display: flex; flex-direction: column; max-height: 720px; overflow-y: auto; }
 .o6-side .sec-h { margin-bottom: 20px; }
 .o6-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; font-size: 14px; color: var(--soft); }
@@ -186,7 +186,7 @@
 .ray { stroke: rgba(255, 255, 255, 0.4); stroke-width: 1.3; stroke-dasharray: 3 4; }
 
 /* 07 · Closest showing */
-.o7 { padding: 96px var(--m) 8px; scroll-margin-top: 40px; }
+.o7 { padding: 96px var(--gut) 8px; scroll-margin-top: 40px; }
 .o7-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }
 .o7-where p { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--soft); }
 .o7-where p svg { color: var(--red-ink); }
@@ -246,7 +246,7 @@
 .cc-fab b { font-weight: 700; }
 
 /* 09 · Tickets page */
-.o9 { padding: calc(var(--nav) + 16px) var(--m) 0; }
+.o9 { padding: calc(var(--nav) + 16px) var(--gut) 0; }
 .o9-crumb { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
 .o9-url { font-size: 12px; color: var(--dim); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 .o9-head { display: grid; grid-template-columns: 140px minmax(0, 1fr) 420px; gap: 36px; align-items: center; padding-bottom: 36px; }
@@ -288,7 +288,7 @@
 .tb-dim { position: fixed; inset: 0; z-index: 79; background: rgba(0, 0, 0, 0.5); opacity: 0; pointer-events: none; transition: opacity 0.35s; }
 .tb-dim.on { opacity: 1; pointer-events: auto; }
 .tb { position: fixed; left: 0; right: 0; bottom: 0; z-index: 80; display: flex; flex-direction: column; }
-.tb-bar { height: 80px; display: flex; align-items: center; gap: 14px; padding: 0 24px; background: rgba(20, 19, 19, 0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45); }
+.tb-bar { height: 80px; display: flex; align-items: center; gap: 14px; padding: 0 max(24px, calc((100% - var(--col)) / 2)); background: rgba(20, 19, 19, 0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45); }
 .tb.nudge .tb-bar { animation: nudge 0.6s var(--ease); }
 .tb-poster { width: 36px; height: 54px; border-radius: 3px; object-fit: cover; object-position: 50% 35%; }
 .tb-t { flex: 1; min-width: 0; }
