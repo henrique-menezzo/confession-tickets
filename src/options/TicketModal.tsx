@@ -164,18 +164,65 @@ function Times() {
   );
 }
 
+/** The one-time code, in four patterns to compare (prototype tab "Code"). Same job in all of them:
+ *  read the code, copy it with one tap, see that it worked. */
 function CodeBox({ note }: { note: string }) {
   const copied = useModal((s) => s.copied);
+  const v = useFlow((s) => s.codeV);
   const copy = () => {
     navigator.clipboard?.writeText(CODE).catch(() => {});
     useModal.setState({ copied: true });
   };
+  const label = <span className="tm-label">Your one-time code</span>;
+  const btnIcon = <Icon name={copied ? 'check' : 'copy'} size={18} />;
+  const spoken = CODE.split('').join(' ');
+
+  // 2 · Field: reads like an input you can copy from; the action sits inside it
+  if (v === 2)
+    return (
+      <div className="tm-cw">
+        {label}
+        <div className={'cv2' + (copied ? ' done' : '')}>
+          <span className="cv2-code" aria-label={spoken}>{CODE}</span>
+          <button className="cv2-btn" onClick={copy}>{btnIcon}{copied ? 'Copied' : 'Copy'}</button>
+        </div>
+        <p className="tm-small">{note}</p>
+      </div>
+    );
+
+  // 3 · Characters: one tile per character, easy to read back or type by hand
+  if (v === 3)
+    return (
+      <div className="tm-cw">
+        {label}
+        <div className="cv3" aria-label={spoken} role="group">
+          {CODE.split('').map((c, i) => <span key={i} className="cv3-c" aria-hidden>{c}</span>)}
+        </div>
+        <button className={'cv3-btn' + (copied ? ' done' : '')} onClick={copy}>{btnIcon}{copied ? 'Copied to clipboard' : 'Copy code'}</button>
+        <p className="tm-small">{note}</p>
+      </div>
+    );
+
+  // 4 · Tap to copy: the whole code is the button
+  if (v === 4)
+    return (
+      <div className="tm-cw">
+        {label}
+        <button className={'cv4' + (copied ? ' done' : '')} onClick={copy} aria-label={`Copy code ${spoken}`}>
+          <span className="cv4-code">{CODE}</span>
+          <span className="cv4-hint">{btnIcon}{copied ? 'Copied' : 'Tap to copy'}</span>
+        </button>
+        <p className="tm-small">{note}</p>
+      </div>
+    );
+
+  // 1 · Coupon: one dashed outline, the code on black and Copy filling the right end
   return (
-    <div className="tm-box tm-code">
-      <span className="tm-label">Your code</span>
-      <div className="tm-code-row">
-        <span className="tm-code-v" aria-label={CODE.split('').join(' ')}>{CODE}</span>
-        <button className={'tm-copy' + (copied ? ' done' : '')} onClick={copy}><Icon name={copied ? 'check' : 'copy'} size={16} />{copied ? 'Copied' : 'Copy'}</button>
+    <div className="tm-cw">
+      {label}
+      <div className={'tm-coupon' + (copied ? ' done' : '')}>
+        <span className="tm-code-v" aria-label={spoken}>{CODE}</span>
+        <button className="tm-coupon-copy" onClick={copy}>{btnIcon}{copied ? 'Copied' : 'Copy'}</button>
       </div>
       <p className="tm-small">{note}</p>
     </div>

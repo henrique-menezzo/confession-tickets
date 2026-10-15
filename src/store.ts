@@ -6,6 +6,7 @@ export type Phase = 'idle' | 'searching' | 'results' | 'far';
 export type Plan = 'promo' | 'upgrade' | 'stream';
 /** Where we are against the single release date: theaters and DailyWire+ both open on Nov 11 (option 11). */
 export type Release = 'before' | 'day' | 'after';
+export type CodeV = 1 | 2 | 3 | 4;
 
 
 interface Flow {
@@ -22,6 +23,7 @@ interface Flow {
   toast: { text: string; key: number } | null;
   page: 'show' | 'tickets'; // option 9 has a page of its own
   release: Release;
+  codeV: CodeV; // which code pattern the All Access modal shows
 
   setOpt: (n: number) => void;
   setUser: (u: User) => void;
@@ -38,12 +40,14 @@ interface Flow {
   say: (text: string) => void;
   setPage: (p: 'show' | 'tickets') => void;
   setRelease: (r: Release) => void;
+  setCodeV: (v: CodeV) => void;
   reset: () => void;
 }
 
 const params = new URLSearchParams(location.search);
 const startUser = (['guest', 'member', 'aa'] as const).find((u) => u === params.get('u')) ?? 'aa';
 const startOpt = 11; // the only experience left
+const startCodeV = Math.min(4, Math.max(1, Number(params.get('c')) || 1)) as CodeV;
 const startRelease = (['before', 'day', 'after'] as const).find((r) => r === params.get('d')) ?? 'before';
 
 function writeUrl(_opt: number, user: User, release: Release = 'before') {
@@ -61,11 +65,18 @@ export const useFlow = create<Flow>((set, get) => ({
   opt: startOpt,
   user: startUser,
   release: startRelease,
+  codeV: startCodeV,
   toast: null,
   ...blank,
 
   setOpt: (opt) => { writeUrl(opt, get().user, get().release); set({ opt, ...blank }); window.scrollTo(0, 0); },
   setUser: (user) => { writeUrl(get().opt, user, get().release); set({ user, joined: false, checkout: null, done: false }); },
+  setCodeV: (codeV) => {
+    const q = new URLSearchParams(location.search);
+    if (codeV === 1) q.delete('c'); else q.set('c', String(codeV));
+    try { history.replaceState(null, '', `${location.pathname}?${q}`); } catch { /* sandboxed hosts */ }
+    set({ codeV });
+  },
   setRelease: (release) => { writeUrl(get().opt, get().user, release); set({ release, ...blank }); },
   search: (zip) => {
     clearTimeout(timer);
