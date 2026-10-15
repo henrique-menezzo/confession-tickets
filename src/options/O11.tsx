@@ -67,7 +67,7 @@ function Hero({ onClaim }: { onClaim: () => void }) {
           ) : (
             <>
               <button className="btn btn-w h11-btn" onClick={onClaim}>
-                <Icon name={tier === 'guest' ? 'lock' : 'ticket'} size={20} />{label}
+                <Icon name="ticket" size={20} />{label}
               </button>
               {release === 'day' && <WatchButton className="btn h11-btn h11-btn2" />}
             </>
