@@ -155,7 +155,6 @@ function Finder() {
           Enter your ZIP code to see the closest showings and claim your seats before they’re gone.
         </p>
       </div>
-      {/* stays under the nav while you go down the list, so a new ZIP is always one tap away */}
       <div className="f11-search"><ZipForm variant="line" cta="Find theaters" locate={false} locateIcon auto /></div>
       {phase === 'searching' && <Searching rows={4} />}
       {phase === 'far' && <NoneNear />}

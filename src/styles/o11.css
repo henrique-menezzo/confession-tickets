@@ -48,8 +48,7 @@
 .f11-head { display: flex; flex-direction: column; gap: 24px; }
 .f11-h { font-size: 40px; line-height: 1.05; font-weight: 600; letter-spacing: -0.02em; }
 .f11-intro { max-width: 690px; font-size: 14px; line-height: 21px; color: var(--mute); }
-/* the search stays under the nav until the end of the list */
-.f11-search { position: sticky; top: var(--nav); z-index: 6; padding: 24px 0 20px; background: var(--bg); }
+.f11-search { padding: 24px 0 20px; }
 .f11-search + * { margin-top: 24px; }
 .f11-list { display: flex; flex-direction: column; gap: 10px; animation: fade 0.3s ease both; }
 .f11-lh { font-size: 13px; line-height: 18px; color: var(--mute); }
