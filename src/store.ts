@@ -6,6 +6,8 @@ export type Phase = 'idle' | 'searching' | 'results' | 'far';
 export type Plan = 'promo' | 'upgrade' | 'stream';
 /** Where we are against the single release date: theaters and DailyWire+ both open on Nov 11 (option 11). */
 export type Release = 'before' | 'day' | 'after';
+/** Phone layouts for the theater rows, to compare: 1 compact, 2 cards, 3 distance, 4 tap the row. */
+export type RowV = 1 | 2 | 3 | 4;
 
 interface Flow {
   opt: number;
@@ -21,6 +23,7 @@ interface Flow {
   toast: { text: string; key: number } | null;
   page: 'show' | 'tickets'; // option 9 has a page of its own
   release: Release;
+  rowV: RowV;
 
   setOpt: (n: number) => void;
   setUser: (u: User) => void;
@@ -37,19 +40,21 @@ interface Flow {
   say: (text: string) => void;
   setPage: (p: 'show' | 'tickets') => void;
   setRelease: (r: Release) => void;
+  setRowV: (v: RowV) => void;
   reset: () => void;
 }
 
 const params = new URLSearchParams(location.search);
 const startUser = (['guest', 'member', 'aa'] as const).find((u) => u === params.get('u')) ?? 'aa';
-const startOpt = Math.min(11, Math.max(0, Number(params.get('o') ?? 0) || 0));
+const startOpt = 11; // the only experience left
+const startRowV = ([1, 2, 3, 4] as const).find((v) => String(v) === params.get('r')) ?? 1;
 const startRelease = (['before', 'day', 'after'] as const).find((r) => r === params.get('d')) ?? 'before';
 
-function writeUrl(opt: number, user: User, release: Release = 'before') {
+function writeUrl(_opt: number, user: User, release: Release = 'before') {
   const q = new URLSearchParams(location.search);
-  if (opt) q.set('o', String(opt)); else q.delete('o');
+  q.delete('o');
   q.set('u', user);
-  if (opt === 11 && release !== 'before') q.set('d', release); else q.delete('d');
+  if (release !== 'before') q.set('d', release); else q.delete('d');
   try { history.replaceState(null, '', `${location.pathname}?${q}`); } catch { /* sandboxed hosts */ }
 }
 
@@ -60,11 +65,18 @@ export const useFlow = create<Flow>((set, get) => ({
   opt: startOpt,
   user: startUser,
   release: startRelease,
+  rowV: startRowV,
   toast: null,
   ...blank,
 
   setOpt: (opt) => { writeUrl(opt, get().user, get().release); set({ opt, ...blank }); window.scrollTo(0, 0); },
   setUser: (user) => { writeUrl(get().opt, user, get().release); set({ user, joined: false, checkout: null, done: false }); },
+  setRowV: (rowV) => {
+    const q = new URLSearchParams(location.search);
+    if (rowV === 1) q.delete('r'); else q.set('r', String(rowV));
+    try { history.replaceState(null, '', `${location.pathname}?${q}`); } catch { /* sandboxed hosts */ }
+    set({ rowV });
+  },
   setRelease: (release) => { writeUrl(get().opt, get().user, release); set({ release, ...blank }); },
   search: (zip) => {
     clearTimeout(timer);

@@ -24,7 +24,6 @@
 .h11-tools { grid-area: tools; display: flex; gap: 4px; margin-top: 32px; }
 .h11-tools .t11-b { margin-left: 0; }
 .h11-note { grid-area: note; margin-top: 12px; }
-.t11 { display: none !important; }
 .h11-title { width: 334px; height: auto; }
 .h11-btn { height: 52px; padding: 0 32px; font-size: 14px; }
 .h11-note { font-size: 12px; line-height: 1; color: rgba(255, 255, 255, 0.7); }
@@ -32,10 +31,9 @@
 .h11-mute { width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center; background: rgba(0, 0, 0, 0.4); }
 
 /* Trailer · Share */
-.t11 { gap: 6px; padding: 32px var(--gut); position: relative; }
-.t11::after { content: ''; position: absolute; left: var(--gut); right: var(--gut); bottom: 0; height: 1px; background: var(--rule); }
 .t11-b { height: 52px; padding: 0 16px; margin-left: -16px; display: inline-flex; align-items: center; gap: 8px; border-radius: 4px; font-size: 14px; font-weight: 600; text-transform: uppercase; transition: background 0.2s; }
 .t11-b + .t11-b { margin-left: 0; }
+.t11 { display: none; }
 .t11-b:hover { background: var(--wash); }
 
 /* Finder beside the poster */
@@ -104,6 +102,8 @@
 .sk11 .sk11-btn { width: 114px; height: 44px; align-self: center; border-radius: 4px; }
 @keyframes sk11 { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 .r11.out .r11-name { color: var(--mute); }
+/* pieces only the phone layouts use */
+.r11-dcol, .r11-mi, .r11-cue { display: none; }
 /* Release date: live badge on the 11th, a second hero action to watch at home */
 .coming.live { display: inline-flex; align-items: center; gap: 8px; }
 .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red-ink); animation: pulse 1.6s ease-in-out infinite; }
@@ -315,19 +315,17 @@
   .h11-shade { background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0) 120px), linear-gradient(0deg, var(--bg) 0%, rgba(10, 9, 9, 0.75) 32%, rgba(10, 9, 9, 0) 58%); }
   .h11-play { top: 290px; width: 68px; height: 68px; }
   .h11-play svg { width: 30px; height: 30px; }
-  .h11-inner { position: relative; left: auto; right: auto; bottom: auto; display: flex; flex-direction: column; }
+  .h11-inner { position: relative; left: auto; right: auto; bottom: auto; display: flex; flex-direction: column; align-items: stretch; }
   .h11-tools { display: none; }
+  .t11 { display: flex; gap: 16px; padding: 16px var(--gut); }
+  .t11-m { width: 52px; height: 56px; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border-radius: 4px; font-size: 12px; line-height: 12px; font-weight: 500; color: #dfdfdf; transition: background 0.2s; }
+  .t11-m:active { background: var(--wash); }
   .h11-btns { margin-top: 16px; }
   .h11-note { margin-top: 10px; }
-  .t11 { display: flex !important; }
   .h11-copy { gap: 16px; width: 100%; }
   .h11 .coming { font-size: 10px; line-height: 10px; }
   .h11-title { width: 290px; }
   .h11-note { font-size: 10px; line-height: 1.2; font-weight: 500; color: var(--ink); opacity: 0.85; }
-  .t11 { gap: 16px; padding: 16px var(--gut); }
-  .t11::after { display: none; }
-  .t11-b { width: 52px; height: 56px; padding: 8px; margin-left: 0; flex-direction: column; justify-content: center; gap: 8px; font-size: 12px; font-weight: 500; text-transform: none; color: #dfdfdf; }
-  .t11-b svg { width: 20px; height: 20px; }
   .m11 { flex-direction: column; gap: 56px; padding: 0 var(--gut) 32px; }
   .m11-left { flex-basis: auto; width: 100%; }
   .m11-left > :first-child { padding-top: 44px; position: relative; }
@@ -345,16 +343,62 @@
   .zip-line .zip-form { flex: 1 1 100%; }
   .zip-line .zip-field { padding: 0 10px; }
   .f11-list { gap: 4px; }
-  /* PHONE frame in DW WIP Q4: info on top, Get tickets stretched underneath, space between rows instead of rules */
-  .r11 { grid-template-columns: 24px minmax(0, 1fr); gap: 0 14px; padding: 16px 0; }
-  .r11 + .r11 { margin-top: 4px; }
-  .r11 + .r11::before { display: none; }
-  .r11-name { font-size: 14px; line-height: 17px; font-weight: 500; }
-  .r11-meta { line-height: 16px; }
+  /* Phone theater rows: four layouts to compare, picked in the prototype controls */
+  .r11 { padding: 16px 0; }
+  .r11-name { font-size: 15px; line-height: 19px; }
+  .r11-meta { line-height: 18px; }
   .r11-times { flex-direction: column; }
-  .r11-go { grid-column: 1 / -1; width: 100%; height: 44px; margin-top: 14px; padding: 0 18px; font-size: 14px; }
-  .r11-go:disabled { box-shadow: inset 0 0 0 1px var(--rule); }
-  .sk11 .sk11-btn { grid-column: 1 / -1; width: 100%; margin-top: 14px; }
+  .r11-mi { margin-left: auto; font-size: 13px; font-weight: 500; color: var(--soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .r11-name .tag { height: 18px; padding: 0 6px; font-size: 9px; }
+  .rv1 .r11-pin, .rv2 .r11-pin, .rv3 .r11-pin, .rv4 .r11-pin { display: none; }
+  /* name and distance share the first line; a seats tag drops under the name instead of pushing the miles down */
+  .rv1 .r11-name, .rv2 .r11-name { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: baseline; }
+  .rv1 .r11-nm, .rv2 .r11-nm { grid-column: 1; grid-row: 1; }
+  .rv1 .r11-mi, .rv2 .r11-mi { grid-column: 2; grid-row: 1; margin-left: 0; }
+  .rv1 .r11-name .tag, .rv2 .r11-name .tag { grid-column: 1; grid-row: 2; justify-self: start; }
+
+  /* 1 · Compact: distance on the name line, the button sits on the showtimes line */
+  .rv1 .r11 { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name name" "meta meta" "times go"; gap: 2px 12px; }
+  .rv1 .r11-main { display: contents; }
+  .rv1 .r11-name { grid-area: name; }
+  .rv1 .r11-mi { display: inline; }
+  .rv1 .r11-dist { display: none; }
+  .rv1 .r11-meta:not(.r11-times) { grid-area: meta; }
+  .rv1 .r11-times { grid-area: times; align-self: end; }
+  .rv1 .r11-go { grid-area: go; align-self: end; height: 36px; padding: 0 14px; font-size: 14px; }
+
+  /* 2 · Cards: each theater on its own tile, button across the bottom */
+  .rv2 { display: flex; flex-direction: column; gap: 8px; }
+  .rv2 .r11 { grid-template-columns: minmax(0, 1fr); padding: 16px; border-radius: 10px; background: var(--s1); }
+  .rv2 .r11 + .r11::before { display: none; }
+  .rv2 .r11.out { background: transparent; padding-block: 12px; }
+  .rv2 .r11-mi { display: inline; }
+  .rv2 .r11-dist { display: none; }
+  .rv2 .r11-go { width: 100%; height: 44px; margin-top: 14px; font-size: 14px; }
+  .rv2 .r11-go:disabled { display: none; }
+
+  /* 3 · Distance: the miles lead the row, button left-aligned under the text */
+  .rv3 .r11 { grid-template-columns: 48px minmax(0, 1fr); gap: 0 12px; }
+  .rv3 .r11-dcol { display: flex; flex-direction: column; align-items: flex-start; padding-top: 1px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
+  .rv3 .r11-dcol b { margin-bottom: 4px; font-size: 20px; line-height: 1; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .rv3 .r11.out .r11-dcol b { color: var(--mute); }
+  .rv3 .r11-dcol svg { color: var(--dim); }
+  .rv3 .r11-dist { display: none; }
+  .rv3 .r11-go { grid-column: 2; justify-self: start; height: 36px; margin-top: 12px; padding: 0 16px; font-size: 14px; }
+  .rv3 .r11-go:disabled { display: none; }
+
+  /* 4 · Tap the row: no button, the whole row opens the tickets */
+  .rv4 .r11 { grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; }
+  .rv4 .r11-go { position: absolute; inset: 0; z-index: 1; width: auto; height: auto; padding: 0; border-radius: 0; background: transparent; color: transparent; font-size: 0; }
+  .rv4 .r11-go:not(:disabled):hover { background: transparent; }
+  .rv4 .r11-go:not(:disabled):active { background: rgba(255, 255, 255, 0.05); transform: none; }
+  .rv4 .r11-go:disabled { display: none; }
+  .rv4 .r11-cue { display: inline-flex; align-items: center; gap: 2px; align-self: center; font-size: 14px; font-weight: 600; color: var(--ink); }
+  .rv4 .r11-cue svg { color: var(--soft); }
+
+  .sk11 .r11 { grid-template-columns: minmax(0, 1fr) auto; }
+  .sk11 .sk11-pin { display: none; }
+  .sk11 .sk11-btn { width: 96px; height: 36px; align-self: end; }
   .h11-btns { width: 100%; }
   .h11-btns .btn { flex: 1 1 100%; }
   .so11 { flex-direction: column; align-items: flex-start; }

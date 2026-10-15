@@ -89,9 +89,11 @@ function Row({ t, near, delay }: { t: Theater; near: boolean; delay?: number }) 
   return (
     <li className={'r11' + (out ? ' out' : '') + (delay !== undefined ? ' late' : '')} style={delay !== undefined ? { animationDelay: `${delay}ms` } : undefined}>
       <Icon name="pin" size={22} className="r11-pin" />
+      {/* phone layout 3 leads with the distance */}
+      <span className="r11-dcol">{near ? <><b>{t.miles}</b>mi</> : <Icon name="pin" size={20} />}</span>
       <div className="r11-main">
-        <p className="r11-name">{t.name}<Status t={t} /></p>
-        <p className="r11-meta">{near ? `${t.city} · ${t.miles} miles` : t.city}</p>
+        <p className="r11-name"><span className="r11-nm">{t.name}</span><Status t={t} />{near && <span className="r11-mi">{t.miles} mi</span>}</p>
+        <p className="r11-meta">{t.city}{near && <span className="r11-dist"> · {t.miles} miles</span>}</p>
         <p className="r11-meta r11-times">
           {t.shows.map((s) => <span key={s.id} className={s.status === 'out' ? 'gone' : ''}>{s.time} · {s.format}</span>)}
         </p>
@@ -99,6 +101,8 @@ function Row({ t, near, delay }: { t: Theater; near: boolean; delay?: number }) 
       <button className="btn btn-w r11-go" disabled={out} onClick={() => openTickets(t)}>
         {out ? 'Sold out' : tier === 'aa' ? 'Claim tickets' : 'Get tickets'}
       </button>
+      {/* phone layout 4: the whole row is the button, this is only the cue */}
+      {!out && <span className="r11-cue" aria-hidden>{tier === 'aa' ? 'Claim' : 'Tickets'}<Icon name="next" size={16} /></span>}
     </li>
   );
 }
@@ -169,6 +173,7 @@ function Finder() {
   const phase = useFlow((s) => s.phase);
   const found = useFlow((s) => s.found);
   const release = useFlow((s) => s.release);
+  const rowV = useFlow((s) => s.rowV);
   const [more, setMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const moreBtn = useRef<HTMLButtonElement>(null);
@@ -204,7 +209,7 @@ function Finder() {
         <div className="f11-list" key={found?.zip ?? 'sample'}>
           <SoldOutNote />
           {near ? <ListHead count={all.length} /> : <p className="f11-lh">A few of the 100 theaters · enter your ZIP for the ones nearest you</p>}
-          <ul className="r11-list">{list.map((t, i) => <Row key={t.id} t={t} near={near} delay={i >= PAGE ? (i - PAGE) * 60 : undefined} />)}</ul>
+          <ul className={'r11-list rv' + rowV}>{list.map((t, i) => <Row key={t.id} t={t} near={near} delay={i >= PAGE ? (i - PAGE) * 60 : undefined} />)}</ul>
           {all.length > PAGE && (
             <button ref={moreBtn} className={'r11-more' + (loading ? ' loading' : '')} onClick={toggle} aria-expanded={more} aria-busy={loading}>
               {loading ? <><span className="spin" />Loading theaters</> : <>{more ? 'Show fewer theaters' : `Show ${all.length - PAGE} more theaters`}<Icon name={more ? 'chevup' : 'chevdown'} size={16} /></>}
@@ -263,9 +268,10 @@ export default function O11() {
     <div className="p11">
       <Nav links={LINKS} here="Shows & Movies" />
       <Hero onClaim={go} />
+      {/* phones: Trailer and Share in their own strip under the hero, as in the PHONE frame */}
       <div className="t11">
-        <button className="t11-b"><Icon name="movie" size={16} />Trailer</button>
-        <button className="t11-b"><Icon name="share" size={16} />Share</button>
+        <button className="t11-m"><Icon name="movie" size={20} />Trailer</button>
+        <button className="t11-m"><Icon name="share" size={20} />Share</button>
       </div>
       <section className="m11">
         <div className="m11-left">

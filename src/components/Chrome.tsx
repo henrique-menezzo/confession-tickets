@@ -2,9 +2,8 @@
 // the toast, and the prototype controls.
 import { useEffect, useState } from 'react';
 import { FAQ } from '../data/data';
-import { useFlow, type Release, type User } from '../store';
+import { useFlow, type Release, type RowV, type User } from '../store';
 import { Icon } from './Icon';
-import { OPTIONS } from '../options/meta';
 
 export function Chat({ label = 'Questions about the screening?', fab = true }: { label?: string; fab?: boolean }) {
   const open = useFlow((s) => s.chat);
@@ -53,44 +52,54 @@ export function Toast() {
 
 const USERS: [User, string][] = [['guest', 'Not a member'], ['member', 'DW+ member'], ['aa', 'All Access']];
 const RELEASES: [Release, string][] = [['before', 'Before Nov 11'], ['day', 'Nov 11'], ['after', 'Nov 12 →']];
+const ROWS: [RowV, string][] = [[1, 'Compact'], [2, 'Cards'], [3, 'Distance'], [4, 'Tap row']];
 
-export function Proto() {
-  const opt = useFlow((s) => s.opt);
-  const user = useFlow((s) => s.user);
-  const setOpt = useFlow((s) => s.setOpt);
-  const setUser = useFlow((s) => s.setUser);
-  const reset = useFlow((s) => s.reset);
-  const idle = useFlow((s) => s.phase === 'idle');
-  const release = useFlow((s) => s.release);
-  const setRelease = useFlow((s) => s.setRelease);
-  const [min, setMin] = useState(() => window.matchMedia('(max-width: 760px)').matches);
-  if (!opt) return null;
-  const meta = OPTIONS[opt - 1];
+function Seg<T extends string | number>({ label, items, value, set, className = '' }: { label: string; items: [T, string][]; value: T; set: (v: T) => void; className?: string }) {
   return (
-    <div className={'proto' + (min ? ' min' : '')}>
-      <button className="proto-home" onClick={() => setOpt(0)} aria-label="All options"><Icon name="grid" size={16} /></button>
-      <div className="proto-opt">
-        <button aria-label="Previous option" onClick={() => setOpt(opt === 1 ? OPTIONS.length : opt - 1)}><Icon name="left" size={16} /></button>
-        <span><b>{String(opt).padStart(2, '0')}</b> {meta.name}</span>
-        <button aria-label="Next option" onClick={() => setOpt(opt === OPTIONS.length ? 1 : opt + 1)}><Icon name="next" size={16} /></button>
-      </div>
-      <div className="proto-seg" role="radiogroup" aria-label="Viewer">
-        {USERS.map(([u, l]) => (
-          <button key={u} role="radio" aria-checked={user === u} className={user === u ? 'on' : ''} onClick={() => setUser(u)}>{l}</button>
+    <div className={'pt-group ' + className}>
+      <span className="pt-label">{label}</span>
+      <div className="proto-seg" role="radiogroup" aria-label={label}>
+        {items.map(([v, l]) => (
+          <button key={String(v)} role="radio" aria-checked={value === v} className={value === v ? 'on' : ''} onClick={() => set(v)}>{l}</button>
         ))}
       </div>
-      {opt === 11 && (
-        <div className="proto-seg proto-date" role="radiogroup" aria-label="Date">
-          {RELEASES.map(([r, l]) => (
-            <button key={r} role="radio" aria-checked={release === r} className={release === r ? 'on' : ''} onClick={() => setRelease(r)}>{l}</button>
-          ))}
-        </div>
-      )}
-      <button className="proto-reset" onClick={reset} aria-label="Start over"><Icon name="reset" size={16} /></button>
-      <button className="proto-min" onClick={() => setMin(!min)} aria-label={min ? 'Show controls' : 'Hide controls'}><Icon name={min ? 'chevup' : 'chevdown'} size={16} /></button>
-      {idle && !(opt === 11 && release === 'after') && (
-        <p className="proto-hint">Try ZIP <b>37064</b> nearby{opt === 11 && <>, <b>30303</b> all sold out</>}, <b>59718</b> none within 50 mi</p>
-      )}
+    </div>
+  );
+}
+
+const KEY = 'confession-proto-open';
+
+/** Prototype controls: tabs at the bottom that fold into one small button. */
+export function Proto() {
+  const user = useFlow((s) => s.user);
+  const setUser = useFlow((s) => s.setUser);
+  const release = useFlow((s) => s.release);
+  const setRelease = useFlow((s) => s.setRelease);
+  const rowV = useFlow((s) => s.rowV);
+  const setRowV = useFlow((s) => s.setRowV);
+  const reset = useFlow((s) => s.reset);
+  const [open, setOpen] = useState(() => {
+    try { const v = localStorage.getItem(KEY); if (v !== null) return v === '1'; } catch { /* storage blocked */ }
+    return !window.matchMedia('(max-width: 760px)').matches;
+  });
+  const toggle = (v: boolean) => { setOpen(v); try { localStorage.setItem(KEY, v ? '1' : '0'); } catch { /* storage blocked */ } };
+
+  if (!open)
+    return (
+      <button className="pt-fab" onClick={() => toggle(true)} aria-label="Show prototype controls" title="Prototype controls">
+        <Icon name="sliders" size={18} />
+      </button>
+    );
+  return (
+    <div className="pt" role="region" aria-label="Prototype controls">
+      <Seg label="Viewer" items={USERS} value={user} set={setUser} />
+      <Seg label="Date" items={RELEASES} value={release} set={setRelease} />
+      <Seg label="Phone rows" items={ROWS} value={rowV} set={setRowV} className="pt-phone" />
+      <div className="pt-end">
+        <p className="pt-hint">ZIP <b>37064</b> nearby · <b>30303</b> sold out · <b>59718</b> none</p>
+        <button className="pt-icon" onClick={reset} aria-label="Start over" title="Start over"><Icon name="reset" size={16} /></button>
+        <button className="pt-icon" onClick={() => toggle(false)} aria-label="Hide prototype controls" title="Hide"><Icon name="chevdown" size={18} /></button>
+      </div>
     </div>
   );
 }
