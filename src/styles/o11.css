@@ -15,9 +15,9 @@
     linear-gradient(60deg, rgba(10, 9, 9, 0.85) 0%, rgba(10, 9, 9, 0.35) 45%, rgba(10, 9, 9, 0) 70%),
     linear-gradient(0deg, rgba(10, 9, 9, 0.6) 0%, rgba(10, 9, 9, 0) 30%);
 }
-.h11-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; border-radius: 50%; display: grid; place-items: center; background: rgba(10, 9, 9, 0.1); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background 0.2s; }
+.h11-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 100px; height: 100px; border-radius: 50%; display: grid; place-items: center; background: rgba(10, 9, 9, 0.1); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3), 0 4px 250px rgba(0, 0, 0, 0.5); transition: background 0.2s; }
 .h11-play:hover { background: rgba(255, 255, 255, 0.12); }
-.h11-play svg { margin-left: 4px; }
+/* the play glyph already sits a little right of its box, which centres the triangle's mass; no extra nudge */
 .h11-inner { position: absolute; left: var(--gut); right: var(--gut); bottom: 40px; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "copy ." "btns tools" "note note"; align-items: end; column-gap: 24px; }
 .h11-copy { grid-area: copy; display: flex; flex-direction: column; align-items: flex-start; gap: 32px; }
 .h11-btns { grid-area: btns; margin-top: 32px; }
@@ -327,7 +327,6 @@
   .h11 .hero-art img { object-position: center top; }
   .h11-shade { background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0) 120px), linear-gradient(0deg, var(--bg) 0%, rgba(10, 9, 9, 0.75) 32%, rgba(10, 9, 9, 0) 58%); }
   .h11-play { top: 290px; width: 68px; height: 68px; }
-  .h11-play svg { width: 30px; height: 30px; }
   .h11-inner { position: relative; left: auto; right: auto; bottom: auto; display: flex; flex-direction: column; align-items: stretch; }
   .h11-tools { display: none; }
   .t11 { display: flex; gap: 16px; padding: 16px var(--gut); }

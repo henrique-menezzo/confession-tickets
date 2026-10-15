@@ -41,7 +41,8 @@ export function Icon({ name, size = 20, stroke = 1.75, className }: { name: keyo
   if (name === 'play')
     return (
       <svg className={className} width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-        <path d="M7 4.8v14.4a1 1 0 0 0 1.52.85l11.5-7.2a1 1 0 0 0 0-1.7L8.52 3.95A1 1 0 0 0 7 4.8z" fill="currentColor" />
+        {/* Tabler player-play, filled: the glyph the design file uses */}
+        <path d="M6 4v16a1 1 0 0 0 1.524 .852l13 -8a1 1 0 0 0 0 -1.704l-13 -8a1 1 0 0 0 -1.524 .852z" fill="currentColor" />
       </svg>
     );
   return (
