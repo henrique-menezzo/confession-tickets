@@ -224,7 +224,8 @@
 .tm-select select { appearance: none; -webkit-appearance: none; cursor: pointer; }
 .tm-select select:invalid, .tm-select select:has(option[value=""]:checked) { color: #8f8f8f; }
 .tm-select svg { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); pointer-events: none; }
-.tm-c-price.gold { background: linear-gradient(180deg, #e2c27a, #a8782f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tm-tag.inline.center { align-self: center; }
+.tm-last .tm-billed { margin-top: -10px; }
 .tm-paybox { gap: 16px; padding: 20px; }
 .tm-pay-h { display: flex; align-items: center; justify-content: space-between; font-size: 14px; }
 .tm-pay-h b { font-weight: 600; }

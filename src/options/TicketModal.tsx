@@ -359,20 +359,19 @@ function PaymentDetails() {
 }
 
 // ── Upgrade: only when the person picked it. Pays the difference, like the Last Call frames ─────
-const LIFETIME = 2000;
-const CARDS = [{ id: 'c1', last: '1932', exp: '08/29' }, { id: 'c2', last: '4417', exp: '03/28' }];
+const CARDS = [{ id: 'c1', last: '1932' }, { id: 'c2', last: '4417' }];
 
-/** The upgrade frame from the design file: plan cards, saved cards to pick from, the prorated summary. */
+/** Upgrade, mixing two frames from the design file: the price hero that pays only the difference,
+ *  and the saved cards to pick from. All Access is the one plan here; it is what carries the tickets. */
 function UpgradePay() {
   const from = useModal((s) => s.from);
   const reason = useModal((s) => s.reason);
   const go = useModal((s) => s.go);
   const say = useFlow((s) => s.say);
-  const [tier, setTier] = useState<'aa' | 'life'>('aa');
   const [card, setCard] = useState(CARDS[0].id);
   const [busy, setBusy] = useState(false);
   const credit = PRICE[from].year;
-  const price = tier === 'aa' ? PRICE.aa.year : LIFETIME;
+  const today = PRICE.aa.year - credit;
   const tickets = reason === 'tickets';
   const pay = () => {
     setBusy(true);
@@ -385,22 +384,17 @@ function UpgradePay() {
     <>
       <Bar />
       <div className="tm-main">
-        <Head title={tickets ? 'Upgrade to All Access and get your 3 tickets.' : 'Upgrade to All Access and watch exclusive content.'} sub={tickets ? <Where /> : undefined} />
-        <div className="tm-cards two" role="radiogroup" aria-label="Plan">
-          <button role="radio" aria-checked={tier === 'aa'} className={'tm-card' + (tier === 'aa' ? ' on' : '')} onClick={() => setTier('aa')}>
-            <span className="tm-tag">{tickets ? `+${FREE_TICKETS} FREE TICKETS` : '25% OFF'}</span>
-            <span className="tm-c-name">All Access</span>
-            <span className="tm-c-price"><s>$21</s>$15<small>/mo</small></span>
-            <span className="tm-c-small">{money(PRICE.aa.year)} billed annually</span>
-            <span className="tm-c-text">All content + private Q&amp;A sessions with hosts</span>
-          </button>
-          <button role="radio" aria-checked={tier === 'life'} className={'tm-card' + (tier === 'life' ? ' on' : '')} onClick={() => setTier('life')}>
-            {tickets && <span className="tm-tag">+{FREE_TICKETS} FREE TICKETS</span>}
-            <span className="tm-c-name">Lifetime</span>
-            <span className="tm-c-price gold">$2,000</span>
-            <span className="tm-c-small">billed one time</span>
-            <span className="tm-c-text">All content + private Q&amp;A sessions with hosts</span>
-          </button>
+        <Head title={tickets ? 'Upgrade to All Access and get your 3 tickets.' : 'Upgrade to All Access'} sub={tickets ? <Where /> : undefined} />
+        <div className="tm-box tm-last">
+          {tickets && <span className="tm-tag inline center">+{FREE_TICKETS} FREE TICKETS</span>}
+          <p className="tm-small">You already have {PRICE[from].name}. Pay only the difference{tickets ? ' and your tickets to Confession come with it' : ''}.</p>
+          <p className="tm-hero-price"><s>$21</s>$15<small>/mo</small></p>
+          <p className="tm-small tm-billed">{money(PRICE.aa.year)} billed annually</p>
+          <div className="tm-rule" />
+          <div className="tm-row"><span>All Access</span><span>{money(PRICE.aa.year)}</span></div>
+          <div className="tm-row"><span>{PRICE[from].name} plan purchase</span><span className="tm-green">−{money(credit)}</span></div>
+          {tickets && <div className="tm-row"><span>{FREE_TICKETS} tickets to Confession</span><span className="tm-green">Included</span></div>}
+          <div className="tm-row total"><span>All Access today</span><span>{money(today)}</span></div>
         </div>
         <div className="tm-box tm-paybox">
           <div className="tm-pay-h"><b>Payment method</b><button className="tm-mini-link" onClick={() => say('Opens the add card form (prototype).')}>Add payment method</button></div>
@@ -414,20 +408,14 @@ function UpgradePay() {
               </button>
             ))}
           </div>
-          <div className="tm-sum2">
-            <div className="tm-row"><span>{tier === 'aa' ? 'All Access, billed yearly' : 'Lifetime, one time'}</span><span>{money(price)}</span></div>
-            <div className="tm-row"><span>Prorated credit</span><span className="tm-green">−{money(credit)}</span></div>
-            {tickets && <div className="tm-row"><span>{FREE_TICKETS} tickets to Confession</span><span className="tm-green">Included</span></div>}
-            <div className="tm-row total"><span>{tier === 'aa' ? 'All Access' : 'Lifetime'} today</span><span>{money(price - credit)}</span></div>
-          </div>
         </div>
         <p className="tm-legal">
-          By clicking <b>Upgrade</b>, you authorize The Daily Wire to charge your card today with the amount shown plus tax{tier === 'aa' ? ', and again to automatically renew at the then-current rate plus tax. You can cancel any time before the next renewal' : ''}. Fees for unused time are non-refundable.
+          By clicking <b>Upgrade</b>, you authorize The Daily Wire to charge your card today with the amount shown plus tax, and again to automatically renew annually at {money(PRICE.aa.year)} or the then-current rate plus tax. You can cancel any time before the next renewal. Fees for unused time are non-refundable.
           {tickets && <> {DISCLOSURE}</>}
         </p>
       </div>
       <div className="tm-foot">
-        <button className="tm-btn" onClick={pay} disabled={busy}>{busy ? <><span className="spin dark" />Upgrading…</> : `Upgrade for ${money(price - credit)}`}</button>
+        <button className="tm-btn" onClick={pay} disabled={busy}>{busy ? <><span className="spin dark" />Upgrading…</> : `Upgrade for ${money(today)}`}</button>
         <p className="tm-secure"><Icon name="shield" size={16} />Secure and Encrypted</p>
       </div>
     </>
