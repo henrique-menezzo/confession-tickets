@@ -1,0 +1,169 @@
+/* 11 · Henrique's Figma page. Measurements from the "1440" frame: 64px margins, 630px hero,
+   764px content column beside a 440px poster, #292929 rules between blocks. */
+.p11 { --m: 64px; --gut: max(var(--m), calc((100% - var(--col)) / 2)); --rule: #292929; }
+.p11 .nav { padding: 0 var(--gut); }
+.p11 .nav-links a { padding: 0 12px; }
+.nav-links a.here { font-weight: 600; }
+
+/* Hero */
+.h11 { position: relative; height: 630px; overflow: hidden; background: #000; }
+.h11 .hero-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 22%; }
+.h11-shade {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0) 130px),
+    linear-gradient(60deg, rgba(10, 9, 9, 0.85) 0%, rgba(10, 9, 9, 0.35) 45%, rgba(10, 9, 9, 0) 70%),
+    linear-gradient(0deg, rgba(10, 9, 9, 0.6) 0%, rgba(10, 9, 9, 0) 30%);
+}
+.h11-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; border-radius: 50%; display: grid; place-items: center; background: rgba(10, 9, 9, 0.1); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background 0.2s; }
+.h11-play:hover { background: rgba(255, 255, 255, 0.12); }
+.h11-play svg { margin-left: 4px; }
+.h11-inner { position: absolute; left: var(--gut); right: var(--gut); bottom: 40px; z-index: 2; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.h11-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 32px; }
+.h11-title { width: 334px; height: auto; }
+.h11-cta { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.h11-btn { height: 52px; padding: 0 32px; font-size: 14px; }
+.h11-note { font-size: 12px; line-height: 1; color: rgba(255, 255, 255, 0.7); }
+.h11-mute { width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center; background: rgba(0, 0, 0, 0.4); }
+
+/* Trailer · Share */
+.t11 { display: flex; gap: 6px; padding: 32px var(--gut); position: relative; }
+.t11::after { content: ''; position: absolute; left: var(--gut); right: var(--gut); bottom: 0; height: 1px; background: var(--rule); }
+.t11-b { height: 52px; padding: 0 16px; margin-left: -16px; display: inline-flex; align-items: center; gap: 8px; border-radius: 4px; font-size: 14px; font-weight: 600; text-transform: uppercase; transition: background 0.2s; }
+.t11-b + .t11-b { margin-left: 0; }
+.t11-b:hover { background: var(--wash); }
+
+/* Finder beside the poster */
+.m11 { display: flex; justify-content: space-between; align-items: flex-start; gap: 64px; padding: 44px var(--gut) 120px; }
+.m11-left { flex: 0 1 764px; min-width: 0; display: flex; flex-direction: column; }
+.m11-left > * + * { position: relative; margin-top: 72px; padding-top: 72px; }
+.m11-left > * + *::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--rule); }
+.m11-anchor { scroll-margin-top: 88px; }
+.m11-txt .label { margin-bottom: 16px; }
+.m11-txt .syn { font-size: 20px; line-height: 30px; }
+.m11-poster { flex: none; position: sticky; top: calc(var(--nav) + 24px); }
+
+.f11 { display: flex; flex-direction: column; gap: 44px; }
+.f11-head { display: flex; flex-direction: column; gap: 24px; }
+.f11-h { font-size: 40px; line-height: 1.05; font-weight: 600; letter-spacing: -0.02em; }
+.f11-intro { max-width: 690px; font-size: 14px; line-height: 21px; color: var(--mute); }
+.f11-list { display: flex; flex-direction: column; gap: 10px; animation: fade 0.3s ease both; }
+.f11-lh { font-size: 13px; line-height: 18px; color: var(--mute); }
+.f11 .list-head { margin-bottom: 0; font-size: 13px; }
+
+/* ZIP: bordered field with the button inside, location to the right */
+.zip-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.zip-line .zip-form { flex: 0 1 625px; height: 56px; padding: 4px; border-radius: 6px; box-shadow: inset 0 0 0 1px var(--rule, #292929); transition: box-shadow 0.2s; }
+.zip-line .zip-form:focus-within { box-shadow: inset 0 0 0 1px #4a4a4a; }
+.zip-line .zip-go { border-radius: 4px; }
+.zip-line .zip-go svg { display: none; }
+.zip-line .zip-under { margin-top: 0; }
+.zip-line .zip-loc { color: var(--soft); }
+
+/* Theater rows: rules between them, no cards */
+.r11-list { list-style: none; margin: 0; padding: 0; }
+.r11 { position: relative; display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 0 14px; align-items: start; padding: 20px 0; animation: rise 0.4s var(--ease) both; }
+.r11 + .r11::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--rule); }
+.r11-pin { color: var(--dim); margin-top: 1px; }
+.r11-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.r11-name { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; font-size: 15px; line-height: 19px; font-weight: 600; }
+.r11-meta { font-size: 13px; line-height: 20px; color: var(--mute); }
+.r11-times { display: flex; flex-wrap: wrap; gap: 0 16px; }
+.r11-times .gone { text-decoration: line-through; color: var(--dim); }
+.r11-go { height: 44px; padding: 0 18px; font-size: 15px; align-self: center; }
+.r11-go:disabled { background: transparent; color: var(--dim); cursor: default; }
+/* one white button at a time: the row you point at, never all five */
+.r11:hover .r11-go:not(:disabled):not(.on), .r11-go:focus-visible { background: var(--ink); color: #000; }
+.r11.on .r11-times { display: none; }
+.r11.out .r11-name { color: var(--mute); }
+.r11-x { grid-column: 2 / -1; margin-top: 20px; display: flex; flex-direction: column; gap: 20px; animation: fade 0.3s ease both; }
+.r11-pick { display: flex; flex-direction: column; gap: 10px; font-size: 13px; color: var(--mute); }
+.r11-x .act-wide { grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; padding: 20px; border-radius: 8px; background: var(--s1); }
+.r11-x .code { background: var(--bg); }
+
+/* Extras and cast */
+.s11 { position: relative; padding: 72px var(--gut); }
+.s11::before { content: ''; position: absolute; top: 0; left: var(--gut); right: var(--gut); height: 1px; background: var(--rule); }
+.s11 .h2 { margin-bottom: 32px; }
+.x11 { width: 416px; max-width: 100%; display: flex; flex-direction: column; gap: 16px; }
+.x11-img { position: relative; aspect-ratio: 416 / 228; border-radius: 4px; overflow: hidden; }
+.x11-img img { width: 100%; height: 100%; object-fit: cover; }
+.x11-img span { position: absolute; right: 8px; bottom: 8px; padding: 4px 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.8); font-size: 12px; line-height: 1; }
+.x11 p { font-size: 16px; line-height: 1.2; font-weight: 500; }
+.c11 { display: flex; gap: 16px; overflow-x: auto; scrollbar-width: none; }
+.c11 figure { margin: 0; flex: none; width: 158px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.c11 img { width: 158px; height: 158px; border-radius: 50%; object-fit: cover; background: var(--s3); }
+.c11 figcaption { font-size: 14px; line-height: 1; font-weight: 600; }
+.c11 figcaption span { display: block; margin-top: 6px; font-size: 12px; font-weight: 500; color: var(--mute); }
+
+/* Footer from the DW design system */
+.ft11 { display: flex; flex-direction: column; gap: 64px; padding: 40px var(--gut); }
+.ft11-top { position: relative; padding-top: 32px; }
+.ft11-top::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--rule); }
+.ft11-logo { width: 164px; height: 15px; }
+.ft11-links { display: flex; justify-content: space-between; align-items: flex-start; gap: 48px; }
+.ft11-cols { display: flex; gap: 72px; }
+.ft11-cols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; min-width: 143px; line-height: 14px; }
+.ft11-cols a { font-size: 14px; line-height: 14px; color: var(--ink); }
+.ft11-cols a:hover { color: var(--soft); }
+.ft11-cols .here a { font-weight: 600; }
+.ft11-app { flex: 0 1 632px; display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 32px; border-radius: 6px; background: var(--s1); }
+.ft11-promo { display: flex; flex-direction: column; gap: 16px; }
+.ft11-plus { width: 134px; height: 13px; }
+.ft11-promo p { font-size: 16px; line-height: 24px; font-weight: 500; }
+.ft11-stores { display: flex; gap: 8px; }
+.ft11-stores img { height: 40px; width: auto; }
+.ft11-qr { width: 135px; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; font-size: 12px; line-height: 16px; color: var(--mute); }
+.ft11-qr img { width: 91px; height: 91px; }
+.ft11-bottom { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 24px; padding-top: 24px; }
+.ft11-bottom::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--rule); }
+.ft11-legal { display: flex; align-items: center; gap: 16px; font-size: 14px; }
+.ft11-legal a { padding-left: 16px; position: relative; }
+.ft11-legal a::before { content: ''; position: absolute; left: 0; top: 50%; width: 1px; height: 20px; margin-top: -10px; background: var(--rule); }
+.ft11-social { display: flex; align-items: center; gap: 8px; }
+.ft11-social a { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--s2); transition: background 0.2s; }
+.ft11-social a:hover { background: var(--s4); }
+.ft11-social a img { width: 20px; height: 20px; }
+.ft11-iab { width: 65px; height: 56px; margin-left: 16px; object-fit: contain; }
+
+@media (max-width: 1100px) {
+  .m11-poster .poster { width: 300px; height: 533px; }
+  .ft11-links { flex-direction: column; }
+  .ft11-app { flex-basis: auto; width: 100%; max-width: 632px; }
+}
+@media (max-width: 760px) {
+  .p11 { --m: 16px; }
+  .p11 .nav { padding: 0 8px; }
+  .h11 { height: auto; padding: 330px var(--gut) 28px; display: flex; flex-direction: column; }
+  .h11 .hero-art img { object-position: center top; }
+  .h11-shade { background: linear-gradient(0deg, var(--bg) 0%, rgba(10, 9, 9, 0.9) 34%, rgba(10, 9, 9, 0) 62%); }
+  .h11-play { top: 170px; width: 72px; height: 72px; }
+  .h11-play svg { width: 24px; height: 24px; }
+  .h11-inner { position: relative; left: auto; right: auto; bottom: auto; }
+  .h11-copy { gap: 20px; width: 100%; }
+  .h11-title { width: 257px; }
+  .h11-cta { width: 100%; }
+  .h11-btn { width: 100%; }
+  .h11-note { line-height: 1.5; }
+  .h11-mute { display: none; }
+  .t11 { padding: 16px var(--gut); }
+  .m11 { flex-direction: column; gap: 48px; padding: 32px var(--gut) 72px; }
+  .m11-left { flex-basis: auto; width: 100%; }
+  .m11-left > * + * { margin-top: 40px; padding-top: 40px; }
+  .m11-poster { position: relative; top: auto; align-self: center; }
+  .m11-poster .poster { width: 214px; height: 380px; }
+  .f11-h { font-size: 30px; }
+  .zip-line .zip-form { flex-basis: 100%; }
+  .r11 { grid-template-columns: minmax(0, 1fr) auto; }
+  .r11-pin { display: none; }
+  .r11-go { height: 40px; padding: 0 14px; font-size: 14px; }
+  .r11-x { grid-column: 1 / -1; }
+  .r11-x .act-wide { grid-template-columns: 1fr; padding: 16px; }
+  .s11 { padding: 48px var(--gut); }
+  .c11 figure { width: 104px; }
+  .c11 img { width: 104px; height: 104px; }
+  .ft11-cols { flex-wrap: wrap; gap: 32px; }
+  .ft11-app { flex-direction: column; align-items: flex-start; padding: 24px; }
+  .ft11-bottom { flex-direction: column; align-items: flex-start; }
+  .ft11-legal { flex-wrap: wrap; }
+}

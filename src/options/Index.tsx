@@ -19,6 +19,7 @@ function Sketch({ n }: { n: number }) {
     7: <>{hero}<rect x="10" y="50" width="140" height="34" fill={S} rx="2" /><rect x="16" y="56" width="50" height="6" fill={W} rx="1" /><rect x="16" y="66" width="34" height="3" fill="#666" rx="1" /><rect x="112" y="60" width="32" height="10" fill={W} rx="1" /><rect x="10" y="88" width="140" height="5" fill="#1a1a1a" rx="1" /></>,
     8: <>{hero}{page}<rect x="96" y="22" width="58" height="74" fill="#151515" rx="3" /><rect x="101" y="30" width="38" height="8" fill="#262626" rx="3" /><rect x="114" y="42" width="34" height="7" fill={W} rx="3" /><rect x="101" y="53" width="44" height="18" fill="#262626" rx="3" /><rect x="101" y="84" width="48" height="7" fill="#222" rx="3" /></>,
     9: <><rect x="0" y="0" width="160" height="8" fill="#111" /><rect x="10" y="14" width="14" height="22" fill="#3a2020" rx="1" /><rect x="28" y="18" width="50" height="6" fill={W} rx="1" /><rect x="28" y="28" width="36" height="3" fill="#666" rx="1" /><rect x="10" y="42" width="140" height="9" fill={S} rx="1" /><rect x="10" y="56" width="92" height="10" fill={S} rx="1" /><rect x="10" y="69" width="92" height="10" fill={S} rx="1" /><rect x="10" y="82" width="92" height="10" fill={S} rx="1" /><rect x="108" y="56" width="42" height="36" fill="#1a1a1a" rx="1" /><rect x="112" y="82" width="34" height="6" fill={W} rx="1" /></>,
+    11: <><rect x="0" y="0" width="160" height="36" fill="#2a2827" /><rect x="10" y="42" width="60" height="5" fill={W} rx="1" /><rect x="10" y="50" width="80" height="3" fill="#555" rx="1" /><rect x="10" y="57" width="70" height="7" fill="#1c1c1c" rx="1" /><rect x="72" y="58" width="16" height="5" fill={W} rx="1" />{[68, 78, 88].map((y) => <g key={y}><rect x="10" y={y} width="40" height="3" fill="#bbb" rx="1" /><rect x="76" y={y - 1} width="14" height="5" fill={W} rx="1" /></g>)}<rect x="112" y="42" width="38" height="56" fill="#3a2020" rx="2" /><rect x="112" y="64" width="38" height="7" fill={R} /></>,
     10: <>{hero}{page}<rect x="0" y="86" width="160" height="14" fill="#161616" /><rect x="6" y="89" width="6" height="8" fill="#3a2020" /><rect x="16" y="90" width="40" height="3" fill={W} rx="1" /><rect x="104" y="89" width="34" height="8" fill="#262626" rx="1" /><rect x="138" y="89" width="16" height="8" fill={W} rx="1" /></>,
   };
   return <svg viewBox="0 0 160 100" className="sketch" aria-hidden>{shapes[n]}</svg>;
@@ -38,7 +39,7 @@ export default function Index() {
       </header>
       <section className="ix-hero">
         <img className="ix-art" src={ART.title} alt="Confession" />
-        <h1>Ten ways to get from the show page to a seat.</h1>
+        <h1>Eleven ways to get from the show page to a seat.</h1>
         <p>Each option is the whole experience, from the Confession page to TicketSpice: search, sold-out showings, nothing nearby, All Access code, member purchase and the plan for visitors. Members-only screenings on {DATE.long}, web only.</p>
         <div className="ix-view">
           <span>View as</span>

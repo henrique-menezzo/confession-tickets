@@ -12,8 +12,9 @@ import O7 from './options/O7';
 import O8 from './options/O8';
 import O9 from './options/O9';
 import O10 from './options/O10';
+import O11 from './options/O11';
 
-const VIEWS = [Index, O1, O2, O3, O4, O5, O6, O7, O8, O9, O10];
+const VIEWS = [Index, O1, O2, O3, O4, O5, O6, O7, O8, O9, O10, O11];
 
 export default function App() {
   const opt = useFlow((s) => s.opt);

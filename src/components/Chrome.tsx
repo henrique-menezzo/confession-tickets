@@ -67,9 +67,9 @@ export function Proto() {
     <div className={'proto' + (min ? ' min' : '')}>
       <button className="proto-home" onClick={() => setOpt(0)} aria-label="All options"><Icon name="grid" size={16} /></button>
       <div className="proto-opt">
-        <button aria-label="Previous option" onClick={() => setOpt(opt === 1 ? 10 : opt - 1)}><Icon name="left" size={16} /></button>
+        <button aria-label="Previous option" onClick={() => setOpt(opt === 1 ? OPTIONS.length : opt - 1)}><Icon name="left" size={16} /></button>
         <span><b>{String(opt).padStart(2, '0')}</b> {meta.name}</span>
-        <button aria-label="Next option" onClick={() => setOpt(opt === 10 ? 1 : opt + 1)}><Icon name="next" size={16} /></button>
+        <button aria-label="Next option" onClick={() => setOpt(opt === OPTIONS.length ? 1 : opt + 1)}><Icon name="next" size={16} /></button>
       </div>
       <div className="proto-seg" role="radiogroup" aria-label="Viewer">
         {USERS.map(([u, l]) => (

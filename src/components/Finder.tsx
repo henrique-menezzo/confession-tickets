@@ -5,7 +5,7 @@ import { DATE, LOCATION_ZIP, RADIUS, isOut, type Show, type Theater } from '../d
 import { useFlow, useTier } from '../store';
 import { Icon } from './Icon';
 
-type ZipVariant = 'hero' | 'fill' | 'big' | 'bar' | 'chat';
+type ZipVariant = 'hero' | 'fill' | 'big' | 'bar' | 'chat' | 'line';
 
 export function ZipForm({ variant = 'fill', cta = 'Find theaters', locate = true, autoFocus = false, onSearch }: { variant?: ZipVariant; cta?: string; locate?: boolean; autoFocus?: boolean; onSearch?: () => void }) {
   const zip = useFlow((s) => s.zip);

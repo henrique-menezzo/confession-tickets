@@ -71,6 +71,13 @@ export const OPTIONS: Meta[] = [
     desc: 'A slim bar stays at the bottom of the show page while you scroll. It opens into a sheet with results and folds back into a summary.',
     why: 'Always one tap away without taking over the page. On a phone it is already a bottom sheet.',
   },
+  {
+    name: 'Finder by the poster',
+    kind: 'On the page',
+    modal: false,
+    desc: 'The page from the design file: the finder sits beside the poster, above the synopsis, with a Get tickets button on every theater. The row opens in place with the code, the price or the plan.',
+    why: 'Built from the design file and cleaned up: one date for the whole list, quieter row buttons, no distance until there is a ZIP.',
+  },
 ];
 
 export const NOTES = [

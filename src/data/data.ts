@@ -83,6 +83,16 @@ export function lookup(zip: string): Lookup {
 
 export const LOCATION_ZIP = '37064';
 
+// Before a ZIP is in: a few theaters from across the country, so the list is never empty.
+// No distance yet; we only know it once there is a ZIP.
+export const SAMPLE: Theater[] = [
+  T('amc-burbank', 'AMC Burbank 16', '125 E Palm Ave', 'Los Angeles, CA', 0, 0, [['7:00 PM', 'Dolby Cinema', 'open']]),
+  T('regal-union-square', 'Regal Union Square', '850 Broadway', 'New York, NY', 0, 0, [['7:00 PM', 'Standard', 'few']]),
+  T('amc-northpark', 'AMC NorthPark 15', '8687 N Central Expy', 'Dallas, TX', 0, 0, [['7:00 PM', 'Dolby Cinema', 'open']]),
+  T('regal-atlantic', 'Regal Atlantic Station', '261 19th St NW', 'Atlanta, GA', 0, 0, [['7:30 PM', 'Standard', 'open']]),
+  T('harkins-tempe', 'Harkins Tempe Marketplace', '2000 E Rio Salado Pkwy', 'Phoenix, AZ', 0, 0, [['7:00 PM', 'IMAX', 'out']]),
+];
+
 export const isOut = (t: Theater) => t.shows.every((s) => s.status === 'out');
 export const firstOpen = (t: Theater) => t.shows.find((s) => s.status !== 'out');
 export const bestMatch = (list: Theater[]) => list.find((t) => !isOut(t));

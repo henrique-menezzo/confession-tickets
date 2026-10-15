@@ -38,7 +38,7 @@ interface Flow {
 
 const params = new URLSearchParams(location.search);
 const startUser = (['guest', 'member', 'aa'] as const).find((u) => u === params.get('u')) ?? 'aa';
-const startOpt = Math.min(10, Math.max(0, Number(params.get('o') ?? 0) || 0));
+const startOpt = Math.min(11, Math.max(0, Number(params.get('o') ?? 0) || 0));
 
 function writeUrl(opt: number, user: User) {
   const q = new URLSearchParams(location.search);

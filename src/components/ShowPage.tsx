@@ -12,7 +12,7 @@ export function Wordmark({ className = '' }: { className?: string }) {
 
 const LINKS = ['News', 'Shows & Movies', 'All Access', 'Sport & State', 'The Midterms'];
 
-export function Nav({ solid = false }: { solid?: boolean }) {
+export function Nav({ solid = false, links = LINKS, here = 'The Midterms', className = '' }: { solid?: boolean; links?: string[]; here?: string; className?: string }) {
   const user = useFlow((s) => s.user);
   const tier = useTier();
   const setUser = useFlow((s) => s.setUser);
@@ -26,11 +26,11 @@ export function Nav({ solid = false }: { solid?: boolean }) {
     return () => window.removeEventListener('scroll', on);
   }, []);
   return (
-    <header className={'nav' + (solid || scrolled ? ' solid' : '')}>
+    <header className={'nav ' + className + (solid || scrolled ? ' solid' : '')}>
       <button className="nav-burger" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h16" /></svg></button>
       <button className="nav-burger nav-search" aria-label="Search"><Icon name="search" size={20} /></button>
       <nav className="nav-links">
-        {LINKS.map((l) => <a key={l} href="#" className={l === 'The Midterms' ? 'mid' : ''} onClick={(e) => e.preventDefault()}>{l}</a>)}
+        {links.map((l) => <a key={l} href="#" className={l === here ? (here === 'The Midterms' ? 'mid' : 'here') : ''} onClick={(e) => e.preventDefault()}>{l}</a>)}
       </nav>
       <Wordmark className="nav-logo" />
       <div className="nav-right">
