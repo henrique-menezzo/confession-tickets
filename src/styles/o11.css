@@ -18,9 +18,8 @@
 .h11-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; border-radius: 50%; display: grid; place-items: center; background: rgba(10, 9, 9, 0.1); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background 0.2s; }
 .h11-play:hover { background: rgba(255, 255, 255, 0.12); }
 .h11-play svg { margin-left: 4px; }
-.h11-inner { position: absolute; left: var(--gut); right: var(--gut); bottom: 40px; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "copy mute" "btns tools" "note note"; align-items: end; column-gap: 24px; }
+.h11-inner { position: absolute; left: var(--gut); right: var(--gut); bottom: 40px; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "copy ." "btns tools" "note note"; align-items: end; column-gap: 24px; }
 .h11-copy { grid-area: copy; display: flex; flex-direction: column; align-items: flex-start; gap: 32px; }
-.h11-inner > .h11-mute { grid-area: mute; justify-self: end; }
 .h11-btns { grid-area: btns; margin-top: 32px; }
 .h11-tools { grid-area: tools; display: flex; gap: 4px; margin-top: 32px; }
 .h11-tools .t11-b { margin-left: 0; }
@@ -29,7 +28,7 @@
 .h11-title { width: 334px; height: auto; }
 .h11-btn { height: 52px; padding: 0 32px; font-size: 14px; }
 .h11-note { font-size: 12px; line-height: 1; color: rgba(255, 255, 255, 0.7); }
-.h11-mute-m { display: none !important; }
+.h11-sound { position: absolute; z-index: 2; right: var(--gut); top: calc(var(--nav) + 16px); }
 .h11-mute { width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center; background: rgba(0, 0, 0, 0.4); }
 
 /* Trailer · Share */
@@ -253,8 +252,6 @@
   .h11 .coming { font-size: 10px; line-height: 10px; }
   .h11-title { width: 290px; }
   .h11-note { font-size: 10px; line-height: 1.2; font-weight: 500; color: var(--ink); opacity: 0.85; }
-  .h11-inner .h11-mute { display: none; }
-  .h11-mute-m { display: grid !important; position: absolute; z-index: 2; right: var(--gut); top: 81px; }
   .t11 { gap: 16px; padding: 16px var(--gut); }
   .t11::after { display: none; }
   .t11-b { width: 52px; height: 56px; padding: 8px; margin-left: 0; flex-direction: column; justify-content: center; gap: 8px; font-size: 12px; font-weight: 500; text-transform: none; color: #dfdfdf; }

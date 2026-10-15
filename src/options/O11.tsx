@@ -53,14 +53,14 @@ function Hero({ onClaim }: { onClaim: () => void }) {
       </picture>
       <div className="h11-shade" />
       <button className="h11-play" aria-label="Play trailer"><Icon name="play" size={36} /></button>
-      <button className="h11-mute h11-mute-m" aria-label="Unmute"><Icon name="mute" size={20} /></button>
+      {/* sound sits at the top, under Sign up, on every screen size */}
+      <button className="h11-mute h11-sound" aria-label="Unmute"><Icon name="mute" size={20} /></button>
       <div className="h11-inner">
-        {/* desktop: the action row runs across the hero, Trailer and Share on the right, sound above them */}
+        {/* desktop: the action row runs across the hero, Trailer and Share on the right */}
         <div className="h11-copy">
           <span className={'coming' + (release === 'day' ? ' live' : '')}>{release === 'day' && <i className="live-dot" />}{BADGE[release]}</span>
           <img className="h11-title" src={ART.title} alt="Confession. Rob Lowe, James Franco." />
         </div>
-        <button className="h11-mute" aria-label="Unmute"><Icon name="mute" size={20} /></button>
         <div className="h11-btns">
           {release === 'after' ? (
             <WatchButton className="btn btn-w h11-btn" />
