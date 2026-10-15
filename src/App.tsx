@@ -13,6 +13,7 @@ import O8 from './options/O8';
 import O9 from './options/O9';
 import O10 from './options/O10';
 import O11 from './options/O11';
+import TicketModal from './options/TicketModal';
 
 const VIEWS = [Index, O1, O2, O3, O4, O5, O6, O7, O8, O9, O10, O11];
 
@@ -25,6 +26,7 @@ export default function App() {
       {/* a new viewer or option starts the experience fresh */}
       <View key={`${opt}-${user}`} />
       <Checkout />
+      {opt === 11 && <TicketModal />}
       <Toast />
       <Proto />
     </>

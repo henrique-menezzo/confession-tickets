@@ -2,7 +2,7 @@
 // the toast, and the prototype controls.
 import { useEffect, useState } from 'react';
 import { FAQ } from '../data/data';
-import { useFlow, type User } from '../store';
+import { useFlow, type Release, type User } from '../store';
 import { Icon } from './Icon';
 import { OPTIONS } from '../options/meta';
 
@@ -52,6 +52,7 @@ export function Toast() {
 }
 
 const USERS: [User, string][] = [['guest', 'Not a member'], ['member', 'DW+ member'], ['aa', 'All Access']];
+const RELEASES: [Release, string][] = [['before', 'Before Nov 11'], ['day', 'Nov 11'], ['after', 'Nov 12 →']];
 
 export function Proto() {
   const opt = useFlow((s) => s.opt);
@@ -60,6 +61,8 @@ export function Proto() {
   const setUser = useFlow((s) => s.setUser);
   const reset = useFlow((s) => s.reset);
   const idle = useFlow((s) => s.phase === 'idle');
+  const release = useFlow((s) => s.release);
+  const setRelease = useFlow((s) => s.setRelease);
   const [min, setMin] = useState(() => window.matchMedia('(max-width: 760px)').matches);
   if (!opt) return null;
   const meta = OPTIONS[opt - 1];
@@ -76,9 +79,18 @@ export function Proto() {
           <button key={u} role="radio" aria-checked={user === u} className={user === u ? 'on' : ''} onClick={() => setUser(u)}>{l}</button>
         ))}
       </div>
+      {opt === 11 && (
+        <div className="proto-seg proto-date" role="radiogroup" aria-label="Date">
+          {RELEASES.map(([r, l]) => (
+            <button key={r} role="radio" aria-checked={release === r} className={release === r ? 'on' : ''} onClick={() => setRelease(r)}>{l}</button>
+          ))}
+        </div>
+      )}
       <button className="proto-reset" onClick={reset} aria-label="Start over"><Icon name="reset" size={16} /></button>
       <button className="proto-min" onClick={() => setMin(!min)} aria-label={min ? 'Show controls' : 'Hide controls'}><Icon name={min ? 'chevup' : 'chevdown'} size={16} /></button>
-      {idle && <p className="proto-hint">Try ZIP <b>37064</b> for theaters nearby, <b>59718</b> for none</p>}
+      {idle && !(opt === 11 && release === 'after') && (
+        <p className="proto-hint">Try ZIP <b>37064</b> nearby{opt === 11 && <>, <b>30303</b> all sold out</>}, <b>59718</b> none within 50 mi</p>
+      )}
     </div>
   );
 }

@@ -70,7 +70,14 @@ const FAR_NEAREST = T('cinemark-billings', 'Cinemark Billings', '2456 Central Av
 
 export interface Lookup { zip: string; place: string; theaters: Theater[]; nearest?: Theater }
 
-const PLACES: Record<string, string> = { '37064': 'Franklin, TN', '37067': 'Franklin, TN', '59718': 'Bozeman, MT', '37203': 'Nashville, TN' };
+const PLACES: Record<string, string> = { '37064': 'Franklin, TN', '37067': 'Franklin, TN', '59718': 'Bozeman, MT', '37203': 'Nashville, TN', '30303': 'Atlanta, GA' };
+
+// Around Atlanta, GA 30303: everything inside the circle is sold out, to show that state.
+const SOLD: Theater[] = [
+  T('regal-atlantic-sold', 'Regal Atlantic Station', '261 19th St NW', 'Atlanta, GA', 2.3, 330, [['7:00 PM', 'Standard', 'out'], ['9:30 PM', 'Standard', 'out']]),
+  T('amc-phipps', 'AMC Phipps Plaza 14', '3500 Peachtree Rd NE', 'Atlanta, GA', 8.1, 8, [['7:00 PM', 'Dolby Cinema', 'out']]),
+  T('regal-avalon', 'Regal Avalon', '3950 North Point Pkwy', 'Alpharetta, GA', 24.6, 12, [['7:30 PM', 'IMAX', 'out']]),
+];
 
 // Any ZIP works. Mountain West and Alaska ZIPs fall outside every 50-mile circle, everything else
 // gets the Nashville set so the flow can be walked from any number.
@@ -78,6 +85,7 @@ export function lookup(zip: string): Lookup {
   const place = PLACES[zip] ?? `ZIP ${zip}`;
   const far = /^(59|82|83|99|97)/.test(zip);
   if (far) return { zip, place, theaters: [], nearest: FAR_NEAREST };
+  if (zip === '30303') return { zip, place, theaters: SOLD };
   return { zip, place, theaters: NEAR };
 }
 
@@ -94,6 +102,7 @@ export const SAMPLE: Theater[] = [
 ];
 
 export const isOut = (t: Theater) => t.shows.every((s) => s.status === 'out');
+export const allOut = (list: Theater[]) => list.length > 0 && list.every(isOut);
 export const firstOpen = (t: Theater) => t.shows.find((s) => s.status !== 'out');
 export const bestMatch = (list: Theater[]) => list.find((t) => !isOut(t));
 

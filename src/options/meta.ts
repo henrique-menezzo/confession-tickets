@@ -75,7 +75,7 @@ export const OPTIONS: Meta[] = [
     name: 'Finder by the poster',
     kind: 'On the page',
     modal: false,
-    desc: 'The page from the design file: the finder sits beside the poster, above the synopsis, with a Get tickets button on every theater. The row opens in place with the code, the price or the plan.',
+    desc: 'The page from the design file: the finder sits beside the poster, above the synopsis. Get tickets opens a DW modal with the code, the price or the plans, and the page follows the release date: before Nov 11, the day, and after.',
     why: 'Built from the design file and cleaned up: one date for the whole list, quieter row buttons, no distance until there is a ZIP.',
   },
 ];

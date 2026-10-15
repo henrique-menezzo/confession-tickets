@@ -1,12 +1,13 @@
 // 11 · Henrique's Figma page ("1440" in the Untitled file), built for the web and cleaned up.
-// The finder sits next to the poster, above the synopsis; each theater row opens in place.
-import { useRef } from 'react';
-import { ART, CAST, DATE, SAMPLE, SYNOPSIS, firstOpen, isOut, type Theater } from '../data/data';
+// The finder sits next to the poster, above the synopsis; Get tickets opens the DW ticket modal.
+// The page follows the single release date: before Nov 11, the day itself, and after.
+import { useRef, useState } from 'react';
+import { ART, CAST, DATE, SAMPLE, SYNOPSIS, allOut, isOut, type Theater } from '../data/data';
 import { useFlow, useTier } from '../store';
 import { Nav, Wordmark } from '../components/ShowPage';
-import { Far, ListHead, Searching, Showtimes, Status, ZipForm } from '../components/Finder';
-import { Action } from '../components/Action';
+import { ListHead, Searching, Status, ZipForm } from '../components/Finder';
 import { Chat } from '../components/Chrome';
+import { openTickets, openWatch } from './TicketModal';
 import { Icon } from '../components/Icon';
 import dwPlus from '../data/footer/dwplus-logo.svg';
 import appStore from '../data/footer/app-store.svg';
@@ -21,9 +22,29 @@ import s4 from '../data/footer/social-4.svg';
 const LINKS = ['News', 'Shows & Movies', 'All Access', 'Shop', 'Kids', 'DWTV'];
 const BACKGROUND = 'A standalone sequel to Run Hide Fight (2020)—The Daily Wire’s first feature film—and its second collaboration with writer-director Kyle Rankin.';
 
+const BADGE = { before: 'Coming November 11', day: 'Premiere tonight', after: 'Now streaming' };
+
+/** Same night at home: visitors join, members get a reminder before the 11th and play it from the 11th on. */
+function WatchButton({ className, label }: { className: string; label?: string }) {
+  const release = useFlow((s) => s.release);
+  const tier = useTier();
+  const say = useFlow((s) => s.say);
+  if (tier === 'guest') return <button className={className} onClick={openWatch}><Icon name="play" size={18} />{label ?? 'Join to watch'}</button>;
+  if (release === 'before') return <button className={className} onClick={() => say('We’ll remind you on November 11, when Confession streams.')}><Icon name="bell" size={18} />Remind me on Nov 11</button>;
+  return <button className={className} onClick={() => say('Starts Confession on DailyWire+ (prototype).')}><Icon name="play" size={18} />{label ?? 'Watch now'}</button>;
+}
+
 function Hero({ onClaim }: { onClaim: () => void }) {
   const tier = useTier();
-  const label = tier === 'aa' ? 'Claim your free movie tickets' : tier === 'member' ? 'Get your movie tickets' : 'Claim your movie tickets';
+  const release = useFlow((s) => s.release);
+  const label = release === 'day'
+    ? (tier === 'aa' ? 'Claim your free tickets for tonight' : 'Get tickets for tonight')
+    : (tier === 'aa' ? 'Claim your free movie tickets' : tier === 'member' ? 'Get your movie tickets' : 'Claim your movie tickets');
+  const note = release === 'after'
+    ? (tier === 'guest' ? 'Streaming on DailyWire+ · included with every membership' : 'Streaming now on DailyWire+')
+    : release === 'day'
+      ? 'Tonight in 100 theaters · or watch it at home on DailyWire+'
+      : `Members-only screenings in 100 theaters · streaming on DailyWire+ the same night · ${DATE.long}`;
   return (
     <section className="h11">
       <picture className="hero-art">
@@ -35,13 +56,22 @@ function Hero({ onClaim }: { onClaim: () => void }) {
       <button className="h11-mute h11-mute-m" aria-label="Unmute"><Icon name="mute" size={20} /></button>
       <div className="h11-inner">
         <div className="h11-copy">
-          <span className="coming">Coming November 11</span>
+          <span className={'coming' + (release === 'day' ? ' live' : '')}>{release === 'day' && <i className="live-dot" />}{BADGE[release]}</span>
           <img className="h11-title" src={ART.title} alt="Confession. Rob Lowe, James Franco." />
           <div className="h11-cta">
-            <button className="btn btn-w h11-btn" onClick={onClaim}>
-              <Icon name={tier === 'guest' ? 'lock' : 'ticket'} size={20} />{label}
-            </button>
-            <p className="h11-note">Members-only screenings in 100 theaters · streaming on DailyWire+ the same night · {DATE.long}</p>
+            <div className="h11-btns">
+              {release === 'after' ? (
+                <WatchButton className="btn btn-w h11-btn" />
+              ) : (
+                <>
+                  <button className="btn btn-w h11-btn" onClick={onClaim}>
+                    <Icon name={tier === 'guest' ? 'lock' : 'ticket'} size={20} />{label}
+                  </button>
+                  {release === 'day' && <WatchButton className="btn h11-btn h11-btn2" />}
+                </>
+              )}
+            </div>
+            <p className="h11-note">{note}</p>
           </div>
         </div>
         <button className="h11-mute" aria-label="Unmute"><Icon name="mute" size={20} /></button>
@@ -51,14 +81,10 @@ function Hero({ onClaim }: { onClaim: () => void }) {
 }
 
 function Row({ t, near }: { t: Theater; near: boolean }) {
-  const pick = useFlow((s) => s.pick);
-  const choose = useFlow((s) => s.choose);
-  const unpick = useFlow((s) => s.unpick);
-  const on = pick?.t.id === t.id;
+  const tier = useTier();
   const out = isOut(t);
-  const open = t.shows.filter((s) => s.status !== 'out');
   return (
-    <li className={'r11' + (on ? ' on' : '') + (out ? ' out' : '')}>
+    <li className={'r11' + (out ? ' out' : '')}>
       <Icon name="pin" size={22} className="r11-pin" />
       <div className="r11-main">
         <p className="r11-name">{t.name}<Status t={t} /></p>
@@ -66,45 +92,81 @@ function Row({ t, near }: { t: Theater; near: boolean }) {
         <p className="r11-meta r11-times">
           {t.shows.map((s) => <span key={s.id} className={s.status === 'out' ? 'gone' : ''}>{s.time} · {s.format}</span>)}
         </p>
-        {/* phones: no Get tickets button, the showtime itself opens the tickets */}
-        <div className="r11-chips"><Showtimes t={t} size="sm" toggle /></div>
       </div>
-      <button
-        className={'btn btn-g r11-go' + (on ? ' on' : '')}
-        disabled={out}
-        aria-expanded={on}
-        onClick={() => (on ? unpick() : choose(t, firstOpen(t)!))}
-      >
-        {out ? 'Sold out' : on ? 'Close' : 'Get tickets'}
+      <button className="btn btn-g r11-go" disabled={out} onClick={() => openTickets(t)}>
+        {out ? 'Sold out' : tier === 'aa' ? 'Claim tickets' : 'Get tickets'}
       </button>
-      {on && (
-        <div className="r11-x">
-          {open.length > 1 && <div className="r11-pick"><span>Pick a time</span><Showtimes t={t} size="sm" /></div>}
-          <Action layout="wide" />
-        </div>
-      )}
     </li>
   );
 }
 
+/** No screening within 50 miles. Since it streams the same night, home is a real alternative. */
+function NoneNear() {
+  const found = useFlow((s) => s.found);
+  const release = useFlow((s) => s.release);
+  const clear = useFlow((s) => s.clearSearch);
+  const [show, setShow] = useState(false);
+  if (!found?.nearest) return null;
+  const n = found.nearest;
+  return (
+    <div className="n11">
+      <Icon name="pin" size={24} className="n11-ic" />
+      <h3>No screenings near {found.place}</h3>
+      <p>Confession streams on DailyWire+ the same night, so you can still watch it {release === 'day' ? 'tonight' : 'on November 11'}. The closest screening is {n.name}, {n.miles} miles away.</p>
+      <div className="n11-acts">
+        <WatchButton className="btn btn-w" label={release === 'day' ? 'Watch it tonight' : undefined} />
+        {!show && <button className="btn btn-g" onClick={() => setShow(true)}>Show the {n.miles}-mile theater</button>}
+        <button className="tm-link" onClick={clear}>Try another ZIP</button>
+      </div>
+      {show && <ul className="r11-list n11-list"><Row t={n} near /></ul>}
+    </div>
+  );
+}
+
+/** Every theater in range is sold out. They stay in the list for urgency; this says what to do instead. */
+function SoldOutNote() {
+  const found = useFlow((s) => s.found);
+  const release = useFlow((s) => s.release);
+  if (!found || !allOut(found.theaters)) return null;
+  return (
+    <div className="so11" role="status">
+      <p><b>Every screening near {found.place} is sold out.</b> Watch it at home on DailyWire+ {release === 'day' ? 'tonight' : 'the same night'}.</p>
+      <WatchButton className="btn btn-w sm" />
+    </div>
+  );
+}
+
+const PAGE = 5;
+
 function Finder() {
   const phase = useFlow((s) => s.phase);
   const found = useFlow((s) => s.found);
+  const release = useFlow((s) => s.release);
+  const [more, setMore] = useState(false);
   const near = phase === 'results' && !!found;
-  const list = near ? found!.theaters : SAMPLE;
+  const all = near ? found!.theaters : SAMPLE;
+  const list = more || !near ? all : all.slice(0, PAGE);
   return (
     <div className="f11">
       <div className="f11-head">
-        <h2 className="f11-h">Find a theater near you</h2>
-        <p className="f11-intro"><span className="f11-intro-a">Confession screens in 100 theaters nationwide on {DATE.long} for DailyWire+ members. </span>Enter your ZIP code to see the closest showings and claim your seats before they’re gone.</p>
-        <ZipForm variant="line" cta="Find theaters" locate={false} locateIcon auto />
+        <h2 className="f11-h">{release === 'day' ? 'Find a theater for tonight' : 'Find a theater near you'}</h2>
+        <p className="f11-intro">
+          <span className="f11-intro-a">{release === 'day' ? 'Confession screens tonight in 100 theaters for DailyWire+ members, and on DailyWire+ the same night. ' : `Confession screens in 100 theaters nationwide on ${DATE.long} for DailyWire+ members. `}</span>
+          Enter your ZIP code to see the closest showings and claim your seats before they’re gone.
+        </p>
       </div>
+      {/* stays under the nav while you go down the list, so a new ZIP is always one tap away */}
+      <div className="f11-search"><ZipForm variant="line" cta="Find theaters" locate={false} locateIcon auto /></div>
       {phase === 'searching' && <Searching rows={4} />}
-      {phase === 'far' && <Far />}
+      {phase === 'far' && <NoneNear />}
       {(phase === 'idle' || near) && (
-        <div className="f11-list">
+        <div className="f11-list" key={found?.zip ?? 'sample'}>
+          <SoldOutNote />
           {near ? <ListHead /> : <p className="f11-lh">A few of the 100 theaters · enter your ZIP for the ones nearest you</p>}
           <ul className="r11-list">{list.map((t) => <Row key={t.id} t={t} near={near} />)}</ul>
+          {near && all.length > PAGE && !more && (
+            <button className="btn btn-g r11-more" onClick={() => setMore(true)}>Show more theaters<Icon name="chevdown" size={16} /></button>
+          )}
         </div>
       )}
     </div>
@@ -151,6 +213,7 @@ function Footer() {
 }
 
 export default function O11() {
+  const release = useFlow((s) => s.release);
   const finder = useRef<HTMLDivElement>(null);
   const go = () => finder.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   return (
@@ -163,7 +226,7 @@ export default function O11() {
       </div>
       <section className="m11">
         <div className="m11-left">
-          <div ref={finder} className="m11-anchor"><Finder /></div>
+          {release !== 'after' && <div ref={finder} className="m11-anchor"><Finder /></div>}
           <div className="m11-txt"><p className="label">Synopsis</p><p className="serif syn">{SYNOPSIS}</p></div>
           <div className="m11-txt"><p className="label">Background</p><p className="serif syn">{BACKGROUND}</p></div>
           <div className="m11-txt"><p className="label">Release Date</p><p className="serif syn">November 11, 2026</p></div>
@@ -189,7 +252,7 @@ export default function O11() {
         </div>
       </section>
       <Footer />
-      <Chat />
+      {release !== 'after' && <Chat />}
     </div>
   );
 }
