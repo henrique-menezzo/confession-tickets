@@ -95,14 +95,13 @@ function Row({ t, near, delay, closest = false }: { t: Theater; near: boolean; d
     <li className={'r11' + (out ? ' out' : '') + (closest ? ' closest' : '') + (delay !== undefined ? ' late' : '')} style={delay !== undefined ? { animationDelay: `${delay}ms` } : undefined}>
       <Icon name="pin" size={22} className="r11-pin" />
       <div className="r11-main">
-        <p className="r11-name">{t.name}</p>
+        <p className="r11-name"><span>{t.name}</span>{few && <span className="r11-few"><i />Few seats left</span>}</p>
         <p className="r11-meta">{closest && <b>Closest · </b>}{t.city}{near && <span className="r11-dist"> · {t.miles} miles</span>}</p>
         {near && (
           <p className="r11-bar" aria-hidden><b><i style={{ inlineSize: `${Math.min(100, (t.miles / RADIUS) * 100)}%` }} /></b>{t.miles} mi</p>
         )}
         <p className="r11-times">
           {t.shows.map((s) => <span key={s.id} className={'r11-t' + (s.status === 'out' ? ' gone' : '')}>{s.time}{s.format !== 'Standard' && <em> {s.format}</em>}</span>)}
-          {few && <span className="r11-few"><i />Few seats left</span>}
         </p>
       </div>
       {out
