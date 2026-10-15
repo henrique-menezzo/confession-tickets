@@ -273,9 +273,15 @@
   .zip-line .zip-form { flex: 1 1 100%; }
   .zip-line .zip-field { padding: 0 10px; }
   .f11-list { gap: 4px; }
-  .r11 { grid-template-columns: 24px minmax(0, 1fr) auto; gap: 0 12px; padding: 16px 0; }
+  /* PHONE frame in DW WIP Q4: info on top, Get tickets stretched underneath, space between rows instead of rules */
+  .r11 { grid-template-columns: 24px minmax(0, 1fr); gap: 0 14px; padding: 16px 0; }
+  .r11 + .r11 { margin-top: 4px; }
+  .r11 + .r11::before { display: none; }
+  .r11-name { font-size: 14px; line-height: 17px; font-weight: 500; }
+  .r11-meta { line-height: 16px; }
   .r11-times { flex-direction: column; }
-  .r11-go { height: 44px; padding: 0 16px; font-size: 15px; }
+  .r11-go { grid-column: 1 / -1; width: 100%; height: 44px; margin-top: 14px; padding: 0 18px; font-size: 14px; }
+  .r11-go:disabled { box-shadow: inset 0 0 0 1px var(--rule); }
   .h11-btns { width: 100%; }
   .h11-btns .btn { flex: 1 1 100%; }
   .so11 { flex-direction: column; align-items: flex-start; }
