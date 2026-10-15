@@ -83,26 +83,35 @@ function Hero({ onClaim }: { onClaim: () => void }) {
   );
 }
 
-function Row({ t, near, delay }: { t: Theater; near: boolean; delay?: number }) {
+function Row({ t, near, delay, closest = false }: { t: Theater; near: boolean; delay?: number; closest?: boolean }) {
   const tier = useTier();
   const out = isOut(t);
+  const few = !out && t.shows.some((s) => s.status === 'few');
+  const label = out ? 'Sold out' : tier === 'aa' ? 'Claim tickets' : 'Get tickets';
   return (
     <li className={'r11' + (out ? ' out' : '') + (delay !== undefined ? ' late' : '')} style={delay !== undefined ? { animationDelay: `${delay}ms` } : undefined}>
+      {/* web row */}
       <Icon name="pin" size={22} className="r11-pin" />
-      {/* phone layout 3 leads with the distance */}
-      <span className="r11-dcol">{near ? <><b>{t.miles}</b>mi</> : <Icon name="pin" size={20} />}</span>
       <div className="r11-main">
-        <p className="r11-name"><span className="r11-nm">{t.name}</span><Status t={t} />{near && <span className="r11-mi">{t.miles} mi</span>}</p>
-        <p className="r11-meta">{t.city}{near && <span className="r11-dist"> · {t.miles} miles</span>}</p>
+        <p className="r11-name">{t.name}<Status t={t} /></p>
+        <p className="r11-meta">{near ? `${t.city} · ${t.miles} miles` : t.city}</p>
         <p className="r11-meta r11-times">
           {t.shows.map((s) => <span key={s.id} className={s.status === 'out' ? 'gone' : ''}>{s.time} · {s.format}</span>)}
         </p>
       </div>
-      <button className="btn btn-w r11-go" disabled={out} onClick={() => openTickets(t)}>
-        {out ? 'Sold out' : tier === 'aa' ? 'Claim tickets' : 'Get tickets'}
-      </button>
-      {/* phone layout 4: the whole row is the button, this is only the cue */}
-      {!out && <span className="r11-cue" aria-hidden>{tier === 'aa' ? 'Claim' : 'Tickets'}<Icon name="next" size={16} /></span>}
+      <button className="btn btn-w r11-go" disabled={out} onClick={() => openTickets(t)}>{label}</button>
+      {/* phone row: where it is, what it is, when, then one button */}
+      <div className="r11p">
+        <div className="r11p-info">
+          <p className="r11p-eye">{closest && <b>Closest · </b>}{near ? `${t.miles} mi · ${t.city}` : t.city}</p>
+          <p className="r11p-nm">{t.name}</p>
+          <p className="r11p-when">
+            {t.shows.map((s) => <span key={s.id} className={s.status === 'out' ? 'gone' : ''}>{s.time}{s.format !== 'Standard' && <em> {s.format}</em>}</span>)}
+          </p>
+          {few && <p className="r11p-few"><i />Few seats left</p>}
+        </div>
+        {out ? <span className="r11p-out">Sold out</span> : <button className="btn btn-w r11p-go" onClick={() => openTickets(t)}>{label}</button>}
+      </div>
     </li>
   );
 }
@@ -173,7 +182,6 @@ function Finder() {
   const phase = useFlow((s) => s.phase);
   const found = useFlow((s) => s.found);
   const release = useFlow((s) => s.release);
-  const rowV = useFlow((s) => s.rowV);
   const [more, setMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const moreBtn = useRef<HTMLButtonElement>(null);
@@ -181,6 +189,7 @@ function Finder() {
   const near = phase === 'results' && !!found;
   const all = near ? [...found!.theaters, ...(found!.more ?? [])].sort((a, b) => a.miles - b.miles) : [...SAMPLE, ...SAMPLE_MORE];
   const list = more ? all : all.slice(0, PAGE);
+  const closestId = all.find((t) => !isOut(t))?.id;
   const toggle = () => {
     if (loading) return;
     if (!more) {
@@ -209,7 +218,7 @@ function Finder() {
         <div className="f11-list" key={found?.zip ?? 'sample'}>
           <SoldOutNote />
           {near ? <ListHead count={all.length} /> : <p className="f11-lh">A few of the 100 theaters · enter your ZIP for the ones nearest you</p>}
-          <ul className={'r11-list rv' + rowV}>{list.map((t, i) => <Row key={t.id} t={t} near={near} delay={i >= PAGE ? (i - PAGE) * 60 : undefined} />)}</ul>
+          <ul className="r11-list">{list.map((t, i) => <Row key={t.id} t={t} near={near} closest={near && t.id === closestId} delay={i >= PAGE ? (i - PAGE) * 60 : undefined} />)}</ul>
           {all.length > PAGE && (
             <button ref={moreBtn} className={'r11-more' + (loading ? ' loading' : '')} onClick={toggle} aria-expanded={more} aria-busy={loading}>
               {loading ? <><span className="spin" />Loading theaters</> : <>{more ? 'Show fewer theaters' : `Show ${all.length - PAGE} more theaters`}<Icon name={more ? 'chevup' : 'chevdown'} size={16} /></>}

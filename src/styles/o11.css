@@ -102,8 +102,8 @@
 .sk11 .sk11-btn { width: 114px; height: 44px; align-self: center; border-radius: 4px; }
 @keyframes sk11 { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 .r11.out .r11-name { color: var(--mute); }
-/* pieces only the phone layouts use */
-.r11-dcol, .r11-mi, .r11-cue { display: none; }
+/* the phone row is its own markup; hidden on the web */
+.r11p { display: none; }
 /* Release date: live badge on the 11th, a second hero action to watch at home */
 .coming.live { display: inline-flex; align-items: center; gap: 8px; }
 .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red-ink); animation: pulse 1.6s ease-in-out infinite; }
@@ -343,62 +343,29 @@
   .zip-line .zip-form { flex: 1 1 100%; }
   .zip-line .zip-field { padding: 0 10px; }
   .f11-list { gap: 4px; }
-  /* Phone theater rows: four layouts to compare, picked in the prototype controls */
-  .r11 { padding: 16px 0; }
-  .r11-name { font-size: 15px; line-height: 19px; }
-  .r11-meta { line-height: 18px; }
-  .r11-times { flex-direction: column; }
-  .r11-mi { margin-left: auto; font-size: 13px; font-weight: 500; color: var(--soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .r11-name .tag { height: 18px; padding: 0 6px; font-size: 9px; }
-  .rv1 .r11-pin, .rv2 .r11-pin, .rv3 .r11-pin, .rv4 .r11-pin { display: none; }
-  /* name and distance share the first line; a seats tag drops under the name instead of pushing the miles down */
-  .rv1 .r11-name, .rv2 .r11-name { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 12px; align-items: baseline; }
-  .rv1 .r11-nm, .rv2 .r11-nm { grid-column: 1; grid-row: 1; }
-  .rv1 .r11-mi, .rv2 .r11-mi { grid-column: 2; grid-row: 1; margin-left: 0; }
-  .rv1 .r11-name .tag, .rv2 .r11-name .tag { grid-column: 1; grid-row: 2; justify-self: start; }
+  /* Phone theater row: distance and city small on top, the name, the times, one button centred on the block */
+  .r11 { display: block; padding: 18px 0; }
+  .r11 > .r11-pin, .r11 > .r11-main, .r11 > .r11-go { display: none; }
+  .r11p { display: flex; align-items: center; gap: 16px; }
+  .r11p-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .r11p-eye { font-size: 11px; line-height: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); font-variant-numeric: tabular-nums; }
+  .r11p-eye b { font-weight: 600; color: var(--ink); }
+  .r11p-nm { margin-top: 6px; font-size: 16px; line-height: 20px; font-weight: 600; text-wrap: balance; }
+  .r11p-when { margin-top: 4px; display: flex; flex-wrap: wrap; gap: 0 6px; font-size: 13px; line-height: 18px; color: var(--soft); font-variant-numeric: tabular-nums; }
+  .r11p-when span + span::before { content: '·'; margin-right: 6px; color: var(--dim); }
+  .r11p-when em { font-style: normal; color: var(--mute); }
+  .r11p-when .gone { color: var(--dim); text-decoration: line-through; }
+  .r11p-few { margin-top: 6px; display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--red-ink); }
+  .r11p-few i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .r11p-go { flex: none; height: 40px; padding: 0 16px; font-size: 14px; }
+  .r11p-out { flex: none; font-size: 13px; font-weight: 600; color: var(--dim); }
+  .r11.out .r11p-nm { color: var(--mute); }
+  .r11.out .r11p-when span + span::before { text-decoration: none; }
 
-  /* 1 · Compact: distance on the name line, the button sits on the showtimes line */
-  .rv1 .r11 { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name name" "meta meta" "times go"; gap: 2px 12px; }
-  .rv1 .r11-main { display: contents; }
-  .rv1 .r11-name { grid-area: name; }
-  .rv1 .r11-mi { display: inline; }
-  .rv1 .r11-dist { display: none; }
-  .rv1 .r11-meta:not(.r11-times) { grid-area: meta; }
-  .rv1 .r11-times { grid-area: times; align-self: end; }
-  .rv1 .r11-go { grid-area: go; align-self: end; height: 36px; padding: 0 14px; font-size: 14px; }
-
-  /* 2 · Cards: each theater on its own tile, button across the bottom */
-  .rv2 { display: flex; flex-direction: column; gap: 8px; }
-  .rv2 .r11 { grid-template-columns: minmax(0, 1fr); padding: 16px; border-radius: 10px; background: var(--s1); }
-  .rv2 .r11 + .r11::before { display: none; }
-  .rv2 .r11.out { background: transparent; padding-block: 12px; }
-  .rv2 .r11-mi { display: inline; }
-  .rv2 .r11-dist { display: none; }
-  .rv2 .r11-go { width: 100%; height: 44px; margin-top: 14px; font-size: 14px; }
-  .rv2 .r11-go:disabled { display: none; }
-
-  /* 3 · Distance: the miles lead the row, button left-aligned under the text */
-  .rv3 .r11 { grid-template-columns: 48px minmax(0, 1fr); gap: 0 12px; }
-  .rv3 .r11-dcol { display: flex; flex-direction: column; align-items: flex-start; padding-top: 1px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); }
-  .rv3 .r11-dcol b { margin-bottom: 4px; font-size: 20px; line-height: 1; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); font-variant-numeric: tabular-nums; }
-  .rv3 .r11.out .r11-dcol b { color: var(--mute); }
-  .rv3 .r11-dcol svg { color: var(--dim); }
-  .rv3 .r11-dist { display: none; }
-  .rv3 .r11-go { grid-column: 2; justify-self: start; height: 36px; margin-top: 12px; padding: 0 16px; font-size: 14px; }
-  .rv3 .r11-go:disabled { display: none; }
-
-  /* 4 · Tap the row: no button, the whole row opens the tickets */
-  .rv4 .r11 { grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; }
-  .rv4 .r11-go { position: absolute; inset: 0; z-index: 1; width: auto; height: auto; padding: 0; border-radius: 0; background: transparent; color: transparent; font-size: 0; }
-  .rv4 .r11-go:not(:disabled):hover { background: transparent; }
-  .rv4 .r11-go:not(:disabled):active { background: rgba(255, 255, 255, 0.05); transform: none; }
-  .rv4 .r11-go:disabled { display: none; }
-  .rv4 .r11-cue { display: inline-flex; align-items: center; gap: 2px; align-self: center; font-size: 14px; font-weight: 600; color: var(--ink); }
-  .rv4 .r11-cue svg { color: var(--soft); }
-
-  .sk11 .r11 { grid-template-columns: minmax(0, 1fr) auto; }
+  .sk11 .r11 { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 16px; }
   .sk11 .sk11-pin { display: none; }
-  .sk11 .sk11-btn { width: 96px; height: 36px; align-self: end; }
+  .sk11 .r11-main { display: flex; }
+  .sk11 .sk11-btn { width: 104px; height: 40px; align-self: center; }
   .h11-btns { width: 100%; }
   .h11-btns .btn { flex: 1 1 100%; }
   .so11 { flex-direction: column; align-items: flex-start; }

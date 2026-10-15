@@ -2,7 +2,7 @@
 // the toast, and the prototype controls.
 import { useEffect, useState } from 'react';
 import { FAQ } from '../data/data';
-import { useFlow, type Release, type RowV, type User } from '../store';
+import { useFlow, type Release, type User } from '../store';
 import { Icon } from './Icon';
 
 export function Chat({ label = 'Questions about the screening?', fab = true }: { label?: string; fab?: boolean }) {
@@ -52,7 +52,6 @@ export function Toast() {
 
 const USERS: [User, string][] = [['guest', 'Not a member'], ['member', 'DW+ member'], ['aa', 'All Access']];
 const RELEASES: [Release, string][] = [['before', 'Before Nov 11'], ['day', 'Nov 11'], ['after', 'Nov 12 →']];
-const ROWS: [RowV, string][] = [[1, 'Compact'], [2, 'Cards'], [3, 'Distance'], [4, 'Tap row']];
 
 function Seg<T extends string | number>({ label, items, value, set, className = '' }: { label: string; items: [T, string][]; value: T; set: (v: T) => void; className?: string }) {
   return (
@@ -75,8 +74,6 @@ export function Proto() {
   const setUser = useFlow((s) => s.setUser);
   const release = useFlow((s) => s.release);
   const setRelease = useFlow((s) => s.setRelease);
-  const rowV = useFlow((s) => s.rowV);
-  const setRowV = useFlow((s) => s.setRowV);
   const reset = useFlow((s) => s.reset);
   const [open, setOpen] = useState(() => {
     try { const v = localStorage.getItem(KEY); if (v !== null) return v === '1'; } catch { /* storage blocked */ }
@@ -94,7 +91,6 @@ export function Proto() {
     <div className="pt" role="region" aria-label="Prototype controls">
       <Seg label="Viewer" items={USERS} value={user} set={setUser} />
       <Seg label="Date" items={RELEASES} value={release} set={setRelease} />
-      <Seg label="Phone rows" items={ROWS} value={rowV} set={setRowV} className="pt-phone" />
       <div className="pt-end">
         <p className="pt-hint">ZIP <b>37064</b> nearby · <b>30303</b> sold out · <b>59718</b> none</p>
         <button className="pt-icon" onClick={reset} aria-label="Start over" title="Start over"><Icon name="reset" size={16} /></button>
