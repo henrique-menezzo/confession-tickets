@@ -7,12 +7,14 @@ import { Icon } from './Icon';
 
 type ZipVariant = 'hero' | 'fill' | 'big' | 'bar' | 'chat' | 'line';
 
-export function ZipForm({ variant = 'fill', cta = 'Find theaters', locate = true, autoFocus = false, onSearch }: { variant?: ZipVariant; cta?: string; locate?: boolean; autoFocus?: boolean; onSearch?: () => void }) {
+/** `suggest`: no location link at rest; it shows up under the field while the empty field has focus. */
+export function ZipForm({ variant = 'fill', cta = 'Find theaters', locate = true, suggest = false, autoFocus = false, onSearch }: { variant?: ZipVariant; cta?: string; locate?: boolean; suggest?: boolean; autoFocus?: boolean; onSearch?: () => void }) {
   const zip = useFlow((s) => s.zip);
   const search = useFlow((s) => s.search);
   const doLocate = useFlow((s) => s.locate);
   const [v, setV] = useState(zip);
   const [err, setErr] = useState('');
+  const [open, setOpen] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => setV(zip), [zip]);
   useEffect(() => { if (autoFocus) ref.current?.focus({ preventScroll: true }); }, [autoFocus]);
@@ -24,8 +26,13 @@ export function ZipForm({ variant = 'fill', cta = 'Find theaters', locate = true
     search(v);
     onSearch?.();
   };
+  const pickLocation = () => { setV(LOCATION_ZIP); setOpen(false); setErr(''); doLocate(); onSearch?.(); };
   return (
-    <div className={'zip zip-' + variant}>
+    <div
+      className={'zip zip-' + variant}
+      onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false); }}
+      onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }}
+    >
       <form className="zip-form" onSubmit={submit} noValidate>
         <label className="zip-field">
           <Icon name="pin" size={variant === 'bar' ? 18 : 20} />
@@ -38,14 +45,23 @@ export function ZipForm({ variant = 'fill', cta = 'Find theaters', locate = true
             placeholder="ZIP code"
             aria-label="ZIP code"
             aria-invalid={!!err}
+            onFocus={() => suggest && setOpen(true)}
+            onClick={() => suggest && setOpen(true)}
           />
         </label>
         <button className="zip-go" type="submit">{cta}{variant !== 'chat' && <Icon name="right" size={16} />}{variant === 'chat' && <Icon name="send" size={18} />}</button>
       </form>
+      {suggest && open && !v && (
+        <div className="zip-suggest">
+          <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={pickLocation}>
+            <Icon name="locate" size={18} />Use my current location
+          </button>
+        </div>
+      )}
       {(locate || err) && (
         <div className="zip-under">
           {err ? <span className="zip-err">{err}</span> : (
-            <button className="zip-loc" type="button" onClick={() => { setV(LOCATION_ZIP); doLocate(); onSearch?.(); }}>
+            <button className="zip-loc" type="button" onClick={pickLocation}>
               <Icon name="locate" size={16} />Use my location
             </button>
           )}

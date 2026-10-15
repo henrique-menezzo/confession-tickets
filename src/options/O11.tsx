@@ -94,7 +94,7 @@ function Finder() {
       <div className="f11-head">
         <h2 className="f11-h">Find a theater near you</h2>
         <p className="f11-intro">Confession screens in 100 theaters nationwide on {DATE.long} for DailyWire+ members. Enter your ZIP code to see the closest showings and claim your seats before they’re gone.</p>
-        <ZipForm variant="line" cta="Find theaters" />
+        <ZipForm variant="line" cta="Find theaters" locate={false} suggest />
       </div>
       {phase === 'searching' && <Searching rows={4} />}
       {phase === 'far' && <Far />}
