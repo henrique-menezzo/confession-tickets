@@ -7,14 +7,13 @@ import { Icon } from './Icon';
 
 type ZipVariant = 'hero' | 'fill' | 'big' | 'bar' | 'chat' | 'line';
 
-/** `suggest`: no location link at rest; it shows up under the field while the empty field has focus. */
-export function ZipForm({ variant = 'fill', cta = 'Find theaters', locate = true, suggest = false, autoFocus = false, onSearch }: { variant?: ZipVariant; cta?: string; locate?: boolean; suggest?: boolean; autoFocus?: boolean; onSearch?: () => void }) {
+/** `locateIcon`: the location action as an icon inside the field. `auto`: search as soon as five digits are in. */
+export function ZipForm({ variant = 'fill', cta = 'Find theaters', locate = true, locateIcon = false, auto = false, autoFocus = false, onSearch }: { variant?: ZipVariant; cta?: string; locate?: boolean; locateIcon?: boolean; auto?: boolean; autoFocus?: boolean; onSearch?: () => void }) {
   const zip = useFlow((s) => s.zip);
   const search = useFlow((s) => s.search);
   const doLocate = useFlow((s) => s.locate);
   const [v, setV] = useState(zip);
   const [err, setErr] = useState('');
-  const [open, setOpen] = useState(false);
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => setV(zip), [zip]);
   useEffect(() => { if (autoFocus) ref.current?.focus({ preventScroll: true }); }, [autoFocus]);
@@ -26,38 +25,35 @@ export function ZipForm({ variant = 'fill', cta = 'Find theaters', locate = true
     search(v);
     onSearch?.();
   };
-  const pickLocation = () => { setV(LOCATION_ZIP); setOpen(false); setErr(''); doLocate(); onSearch?.(); };
+  const pickLocation = () => { setV(LOCATION_ZIP); setErr(''); doLocate(); onSearch?.(); };
   return (
-    <div
-      className={'zip zip-' + variant}
-      onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false); }}
-      onKeyDown={(e) => { if (e.key === 'Escape') setOpen(false); }}
-    >
+    <div className={'zip zip-' + variant}>
       <form className="zip-form" onSubmit={submit} noValidate>
         <label className="zip-field">
           <Icon name="pin" size={variant === 'bar' ? 18 : 20} />
           <input
             ref={ref}
             value={v}
-            onChange={(e) => { setV(e.target.value.replace(/\D/g, '').slice(0, 5)); setErr(''); }}
+            onChange={(e) => {
+              const next = e.target.value.replace(/\D/g, '').slice(0, 5);
+              setV(next); setErr('');
+              // five digits is a whole ZIP: search right away and drop the phone keyboard
+              if (auto && next.length === 5 && next !== zip) { search(next); ref.current?.blur(); onSearch?.(); }
+            }}
             inputMode="numeric"
             autoComplete="postal-code"
             placeholder="ZIP code"
             aria-label="ZIP code"
             aria-invalid={!!err}
-            onFocus={() => suggest && setOpen(true)}
-            onClick={() => suggest && setOpen(true)}
           />
         </label>
+        {locateIcon && (
+          <button className="zip-locate" type="button" onClick={pickLocation} aria-label="Use my location" title="Use my location">
+            <Icon name="locate" size={18} />
+          </button>
+        )}
         <button className="zip-go" type="submit">{cta}{variant !== 'chat' && <Icon name="right" size={16} />}{variant === 'chat' && <Icon name="send" size={18} />}</button>
       </form>
-      {suggest && open && !v && (
-        <div className="zip-suggest">
-          <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={pickLocation}>
-            <Icon name="locate" size={18} />Use my current location
-          </button>
-        </div>
-      )}
       {(locate || err) && (
         <div className="zip-under">
           {err ? <span className="zip-err">{err}</span> : (
@@ -77,16 +73,17 @@ export function Status({ t, s }: { t: Theater; s?: Show }) {
   return null;
 }
 
-export function Showtimes({ t, size = 'md' }: { t: Theater; size?: 'sm' | 'md' }) {
+export function Showtimes({ t, size = 'md', toggle = false }: { t: Theater; size?: 'sm' | 'md'; toggle?: boolean }) {
   const pick = useFlow((s) => s.pick);
   const choose = useFlow((s) => s.choose);
+  const unpick = useFlow((s) => s.unpick);
   return (
     <div className={'times times-' + size}>
       {t.shows.map((s) => {
         const on = pick?.s.id === s.id;
         const out = s.status === 'out';
         return (
-          <button key={s.id} className={'time' + (on ? ' on' : '') + (out ? ' out' : '') + (s.status === 'few' ? ' few' : '')} disabled={out} onClick={() => choose(t, s)} aria-pressed={on}>
+          <button key={s.id} className={'time' + (on ? ' on' : '') + (out ? ' out' : '') + (s.status === 'few' ? ' few' : '')} disabled={out} onClick={() => (toggle && on ? unpick() : choose(t, s))} aria-pressed={on}>
             <span className="time-t">{s.time}</span>
             <span className="time-f">{out ? 'Sold out' : s.format}</span>
           </button>

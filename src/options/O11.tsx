@@ -32,6 +32,7 @@ function Hero({ onClaim }: { onClaim: () => void }) {
       </picture>
       <div className="h11-shade" />
       <button className="h11-play" aria-label="Play trailer"><Icon name="play" size={36} /></button>
+      <button className="h11-mute h11-mute-m" aria-label="Unmute"><Icon name="mute" size={20} /></button>
       <div className="h11-inner">
         <div className="h11-copy">
           <span className="coming">Coming November 11</span>
@@ -65,6 +66,8 @@ function Row({ t, near }: { t: Theater; near: boolean }) {
         <p className="r11-meta r11-times">
           {t.shows.map((s) => <span key={s.id} className={s.status === 'out' ? 'gone' : ''}>{s.time} · {s.format}</span>)}
         </p>
+        {/* phones: no Get tickets button, the showtime itself opens the tickets */}
+        <div className="r11-chips"><Showtimes t={t} size="sm" toggle /></div>
       </div>
       <button
         className={'btn btn-g r11-go' + (on ? ' on' : '')}
@@ -93,8 +96,8 @@ function Finder() {
     <div className="f11">
       <div className="f11-head">
         <h2 className="f11-h">Find a theater near you</h2>
-        <p className="f11-intro">Confession screens in 100 theaters nationwide on {DATE.long} for DailyWire+ members. Enter your ZIP code to see the closest showings and claim your seats before they’re gone.</p>
-        <ZipForm variant="line" cta="Find theaters" locate={false} suggest />
+        <p className="f11-intro"><span className="f11-intro-a">Confession screens in 100 theaters nationwide on {DATE.long} for DailyWire+ members. </span>Enter your ZIP code to see the closest showings and claim your seats before they’re gone.</p>
+        <ZipForm variant="line" cta="Find theaters" locate={false} locateIcon auto />
       </div>
       {phase === 'searching' && <Searching rows={4} />}
       {phase === 'far' && <Far />}
@@ -118,6 +121,10 @@ function Footer() {
     <footer className="ft11">
       <div className="ft11-top"><Wordmark className="ft11-logo" /></div>
       <div className="ft11-links">
+        <div className="ft11-mcols">
+          <ul>{['News', 'Shows & Movies', 'Shop', 'Kids', 'About', 'Advertise With Us', 'Authors', 'Book our Speakers', 'Terms', 'Privacy'].map((l) => <li key={l} className={l === 'News' ? 'here' : ''}><a href="#" onClick={(e) => e.preventDefault()}>{l}</a></li>)}</ul>
+          <ul>{['Careers', 'Contact Support', 'Gift Membership', 'Cookie Settings', 'Legal', 'Media & Press Inquiries', 'Shipping & Returns', 'Standards & Policies', 'Submit a News Tip'].map((l) => <li key={l}><a href="#" onClick={(e) => e.preventDefault()}>{l}</a></li>)}</ul>
+        </div>
         <div className="ft11-cols">
           {cols.map((c, i) => (
             <ul key={i}>{c.map((l) => <li key={l} className={l === 'News' ? 'here' : ''}><a href="#" onClick={(e) => e.preventDefault()}>{l}</a></li>)}</ul>
