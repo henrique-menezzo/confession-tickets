@@ -29,7 +29,7 @@ export function CodeCard({ size = 'md' }: { size?: 'md' | 'lg' | 'sm' }) {
 export function GoTicketSpice({ label = 'Continue to TicketSpice', block = true }: { label?: string; block?: boolean }) {
   const handoff = useFlow((s) => s.handoff);
   return (
-    <button className={'btn btn-w' + (block ? ' block' : '')} onClick={handoff}>
+    <button className={'btn btn-w' + (block ? ' block' : '')} onClick={() => handoff()}>
       {label}<Icon name="out" size={17} />
     </button>
   );

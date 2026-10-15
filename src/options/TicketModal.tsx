@@ -29,15 +29,17 @@ interface M {
   upgrade: boolean; // paying the difference to All Access
   from: PlanId; // the plan an upgrade starts from
   copied: boolean;
+  went: boolean; // sent to TicketSpice; the modal stays open until the person closes it
+  dir: 1 | -1; // which way the content slides when the step changes
   show: (step: Step, reason: Reason, plan?: PlanId) => void;
   go: (step: Step, patch?: Partial<M>) => void;
   close: () => void;
 }
 
 export const useModal = create<M>((set, get) => ({
-  open: false, step: 'tickets', back: null, reason: 'tickets', plan: 'aa', upgrade: false, from: 'annual', copied: false,
-  show: (step, reason, plan = reason === 'watch' ? 'annual' : 'aa') => set({ open: true, step, back: null, reason, plan, upgrade: false, copied: false }),
-  go: (step, patch = {}) => set({ back: get().step, step, ...patch }),
+  open: false, step: 'tickets', back: null, reason: 'tickets', plan: 'aa', upgrade: false, from: 'annual', copied: false, went: false, dir: 1,
+  show: (step, reason, plan = reason === 'watch' ? 'annual' : 'aa') => set({ open: true, step, back: null, reason, plan, upgrade: false, copied: false, went: false, dir: 1 }),
+  go: (step, patch = {}) => set({ back: get().step, step, dir: 1, ...patch }),
   close: () => set({ open: false }),
 }));
 
@@ -57,7 +59,24 @@ export function openWatch() {
 export default function TicketModal() {
   const m = useModal();
   const box = useRef<HTMLDivElement>(null);
+  const inner = useRef<HTMLDivElement>(null);
+  const [shown, setShown] = useState(m.open);
+  const [h, setH] = useState<number | null>(null);
   const sheet = typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches;
+  // stays mounted for the closing animation
+  useEffect(() => {
+    if (m.open) { setShown(true); return; }
+    const t = setTimeout(() => { setShown(false); setH(null); }, 240);
+    return () => clearTimeout(t);
+  }, [m.open]);
+  // the box keeps one frame and eases to the height of whatever step is inside it
+  useEffect(() => {
+    const el = inner.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setH(el.offsetHeight));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [shown]);
   useEffect(() => {
     if (!m.open) return;
     const k = (e: KeyboardEvent) => e.key === 'Escape' && m.close();
@@ -67,11 +86,15 @@ export default function TicketModal() {
     return () => { window.removeEventListener('keydown', k); document.documentElement.classList.remove('locked'); };
   }, [m.open, m.close]);
   useEffect(() => { box.current?.querySelector('.tm-main')?.scrollTo(0, 0); }, [m.step]);
-  if (!m.open) return null;
+  if (!shown) return null;
   return createPortal(
-    <div className={'tm-back' + (sheet ? ' sheet' : '')} onPointerDown={(e) => e.target === e.currentTarget && m.close()}>
-      <div className="tm" role="dialog" aria-modal="true" aria-labelledby="tm-title" ref={box} key={m.step}>
-        <Body />
+    <div className={'tm-back' + (sheet ? ' sheet' : '') + (m.open ? '' : ' leaving')} onPointerDown={(e) => e.target === e.currentTarget && m.close()}>
+      <div className="tm" role="dialog" aria-modal="true" aria-labelledby="tm-title" ref={box} style={h ? { height: h } : undefined}>
+        <div className="tm-in" ref={inner}>
+          <div className={'tm-stage ' + (m.dir > 0 ? 'fwd' : 'bwd')} key={m.step}>
+            <Body />
+          </div>
+        </div>
       </div>
     </div>,
     document.body,
@@ -94,8 +117,8 @@ function Bar({ label }: { label?: string }) {
   const go = useModal((s) => s.go);
   return (
     <div className="tm-bar">
-      {back && <button className="tm-back-btn" aria-label="Back" onClick={() => go(back, { back: null })}><Icon name="left" size={20} /></button>}
-      <span>{label ?? (tier === 'guest' ? 'Create your account' : 'jo***es@gmail.com')}</span>
+      {back && <button className="tm-back-btn" aria-label="Back" onClick={() => go(back, { back: null, dir: -1 })}><Icon name="left" size={20} /></button>}
+      {label !== '' && <span>{label ?? (tier === 'guest' ? 'Create your account' : 'jo***es@gmail.com')}</span>}
       <button className="tm-x" aria-label="Close" onClick={close}><Icon name="x" size={20} /></button>
     </div>
   );
@@ -164,7 +187,7 @@ function ToTicketSpice() {
   const handoff = useFlow((s) => s.handoff);
   return (
     <div className="tm-foot">
-      <button className="tm-btn" onClick={() => { handoff(); useModal.setState({ copied: true }); }}>Continue to TicketSpice<Icon name="out" size={16} /></button>
+      <button className="tm-btn" onClick={() => { handoff(true); useModal.setState({ copied: true, went: true }); }}>Continue to TicketSpice<Icon name="out" size={16} /></button>
       <p className={'tm-hint' + (copied ? ' ok' : '')}>
         {copied ? <><Icon name="check" size={15} />Code copied. Paste it under Promo code at checkout.</> : 'We copy the code for you. Paste it under Promo code at checkout.'}
       </p>
@@ -192,7 +215,7 @@ function Choice() {
   const [pick, setPick] = useState<'buy' | 'aa'>('buy');
   const go = useModal((s) => s.go);
   const handoff = useFlow((s) => s.handoff);
-  const close = useModal((s) => s.close);
+  const went = useModal((s) => s.went);
   const diff = PRICE.aa.year - PRICE.annual.year;
   return (
     <>
@@ -216,9 +239,11 @@ function Choice() {
       </div>
       <div className="tm-foot">
         {pick === 'buy'
-          ? <button className="tm-btn" onClick={() => { handoff(); close(); }}>Buy tickets on TicketSpice<Icon name="out" size={16} /></button>
+          ? <button className="tm-btn" onClick={() => { handoff(true); useModal.setState({ went: true }); }}>Buy tickets on TicketSpice<Icon name="out" size={16} /></button>
           : <button className="tm-btn" onClick={() => go('pay', { plan: 'aa', upgrade: true, from: 'annual' })}>Upgrade for {money(diff)}</button>}
-        <p className="tm-hint">{pick === 'buy' ? 'Opens ticketspice.com in a new tab' : 'You only pay the difference from your Annual plan'}</p>
+        {pick === 'buy' && went
+          ? <p className="tm-hint ok"><Icon name="check" size={15} />TicketSpice opened in a new tab</p>
+          : <p className="tm-hint">{pick === 'buy' ? 'Opens ticketspice.com in a new tab' : 'You only pay the difference from your Annual plan'}</p>}
       </div>
     </>
   );
@@ -269,8 +294,72 @@ function Plans() {
   );
 }
 
-// ── Payment: summary box like the Last Call frames, then the card ───────────────────────────────
+// ── Payment details: the Figma frame (plan card, card fields, Confirm payment) ──────────────────
+const PLAN_LINE: Record<PlanId, { tag?: string; line: React.ReactNode; sub: string }> = {
+  monthly: { line: <>$15/month</>, sub: 'Billed monthly. Cancel anytime.' },
+  annual: { tag: 'Save 25%', line: <>$10/month, <s>$156</s> $104.30/year</>, sub: 'Our audience’s favorite. Save $75.70 vs. monthly.' },
+  aa: { tag: 'Save 25%', line: <>$15/month, <s>$252</s> $174.30/year</>, sub: 'Full library and private Q&As with hosts.' },
+};
+
 function Pay() {
+  return useModal((s) => s.upgrade) ? <UpgradePay /> : <PaymentDetails />;
+}
+
+function PaymentDetails() {
+  const plan = useModal((s) => s.plan);
+  const reason = useModal((s) => s.reason);
+  const go = useModal((s) => s.go);
+  const [busy, setBusy] = useState(false);
+  const p = PLAN_LINE[plan];
+  const withTickets = plan === 'aa' && reason === 'tickets';
+  const confirm = (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setTimeout(() => {
+      if (plan === 'aa') useFlow.setState({ joined: true });
+      else useFlow.setState({ user: 'member' });
+      go('done', { back: null });
+    }, 900);
+  };
+  return (
+    <form className="tm-form" onSubmit={confirm} noValidate>
+      <Bar label="" />
+      <div className="tm-main tm-pd">
+        <h2 id="tm-title" className="tm-pd-h">Payment Details</h2>
+        <div className="tm-plan">
+          <div className="tm-plan-top">
+            <span className="tm-plan-name">{PRICE[plan].name}</span>
+            {withTickets ? <span className="tm-tag inline">+{FREE_TICKETS} FREE TICKETS</span> : p.tag && <span className="tm-tag light inline">{p.tag}</span>}
+            <button type="button" className="tm-plan-change" aria-label="Change plan" onClick={() => go('plans', { back: null, dir: -1 })}><Icon name="chevdown" size={20} /></button>
+          </div>
+          <p className="tm-plan-line">{p.line}</p>
+          <p className="tm-plan-sub">{withTickets ? `${p.sub} Plus ${FREE_TICKETS} tickets to Confession.` : p.sub}</p>
+        </div>
+        <div className="tm-inputs">
+          <input placeholder="First Name" autoComplete="given-name" aria-label="First name" />
+          <input placeholder="Last Name" autoComplete="family-name" aria-label="Last name" />
+          <input className="wide" placeholder="Card Number" inputMode="numeric" autoComplete="off" aria-label="Card number" />
+          <input placeholder="MM/YY" inputMode="numeric" autoComplete="off" aria-label="Expiry" />
+          <input placeholder="CVC" inputMode="numeric" autoComplete="off" aria-label="CVC" />
+          <label className="tm-select"><select aria-label="Country" defaultValue=""><option value="" disabled>Country</option><option>United States</option><option>Canada</option></select><Icon name="chevdown" size={20} /></label>
+          <input placeholder="Zip Code" inputMode="numeric" autoComplete="postal-code" aria-label="Zip code" />
+          <input className="wide" placeholder="Offer Code (optional)" aria-label="Offer code" />
+        </div>
+        <p className="tm-legal">
+          By clicking <b>Confirm Payment</b>, you authorize The Daily Wire to charge your card today with the amount shown plus tax, and again to automatically renew at the then-current rate plus tax. You can cancel any time before the next renewal. Fees for unused time are non-refundable.
+          {withTickets && <> {DISCLOSURE}</>}
+        </p>
+      </div>
+      <div className="tm-foot">
+        <button className="tm-btn" type="submit" disabled={busy}>{busy ? <span className="spin dark" /> : 'Confirm payment'}</button>
+        <p className="tm-secure"><Icon name="shield" size={16} />Secure and Encrypted</p>
+      </div>
+    </form>
+  );
+}
+
+// ── Upgrade: only when the person picked it. Pays the difference, like the Last Call frames ─────
+function UpgradePay() {
   const plan = useModal((s) => s.plan);
   const upgrade = useModal((s) => s.upgrade);
   const from = useModal((s) => s.from);
@@ -316,6 +405,7 @@ function Pay() {
       </div>
       <div className="tm-foot">
         <button className="tm-btn" onClick={pay} disabled={busy}>{busy ? <span className="spin dark" /> : 'Agree & Continue'}</button>
+        <p className="tm-secure"><Icon name="shield" size={16} />Secure and Encrypted</p>
       </div>
     </>
   );
@@ -326,6 +416,7 @@ function Done() {
   const tier = useTier();
   const reason = useModal((s) => s.reason);
   const plan = useModal((s) => s.plan);
+  const went = useModal((s) => s.went);
   const go = useModal((s) => s.go);
   const close = useModal((s) => s.close);
   const release = useFlow((s) => s.release);
@@ -360,6 +451,8 @@ function Done() {
       </>
     );
 
+  // Monthly or Annual just bought: the last call shows the 3 tickets they can still get, and buying
+  // on TicketSpice stays one link away for anyone who would rather pay per ticket.
   const diff = PRICE.aa.year - PRICE[plan].year;
   return (
     <>
@@ -378,7 +471,9 @@ function Done() {
       </div>
       <div className="tm-foot">
         <button className="tm-btn" onClick={() => go('pay', { plan: 'aa', upgrade: true, from: plan, back: null })}>Upgrade for {money(diff)}</button>
-        <button className="tm-link" onClick={() => { handoff(); close(); }}>No thanks, buy tickets for ${TICKET_PRICE} each</button>
+        {went
+          ? <p className="tm-hint ok"><Icon name="check" size={15} />TicketSpice opened in a new tab</p>
+          : <button className="tm-link" onClick={() => { handoff(true); useModal.setState({ went: true }); }}>No thanks, buy tickets for ${TICKET_PRICE} each</button>}
       </div>
     </>
   );

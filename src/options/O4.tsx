@@ -134,7 +134,7 @@ function Flow({ close }: { close: () => void }) {
             )}
           </div>
           <div className="pw-foot">
-            <button className="pw-btn" onClick={handoff}>{tier === 'aa' ? 'CONTINUE TO TICKETSPICE' : 'BUY TICKETS ON TICKETSPICE'}<Icon name="out" size={16} /></button>
+            <button className="pw-btn" onClick={() => handoff()}>{tier === 'aa' ? 'CONTINUE TO TICKETSPICE' : 'BUY TICKETS ON TICKETSPICE'}<Icon name="out" size={16} /></button>
             {tier === 'aa' ? <AAHelp /> : <p>Opens ticketspice.com in a new tab</p>}
           </div>
         </>

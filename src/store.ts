@@ -32,7 +32,7 @@ interface Flow {
   openCheckout: (p: Plan) => void;
   closeCheckout: () => void;
   completeCheckout: () => void;
-  handoff: () => void;
+  handoff: (quiet?: boolean) => void; // quiet: the caller shows its own confirmation
   setChat: (v: boolean) => void;
   say: (text: string) => void;
   setPage: (p: 'show' | 'tickets') => void;
@@ -87,14 +87,14 @@ export const useFlow = create<Flow>((set, get) => ({
     // the ticket views show their own welcome; only the streaming plan needs a word here
     if (plan === 'stream') get().say('Welcome to DailyWire+. We’ll email you when Confession streams.');
   },
-  handoff: () => {
+  handoff: (quiet = false) => {
     const { user, joined } = get();
     const hasCode = user === 'aa' || joined;
     if (hasCode) navigator.clipboard?.writeText(CODE).catch(() => {});
     // same click as the button, so the new tab is not treated as a popup
     window.open(TICKETSPICE_URL, '_blank', 'noopener');
     set({ done: true });
-    get().say(hasCode ? 'Code copied. Opening TicketSpice in a new tab.' : 'Opening TicketSpice in a new tab.');
+    if (!quiet) get().say(hasCode ? 'Code copied. Opening TicketSpice in a new tab.' : 'Opening TicketSpice in a new tab.');
   },
   setChat: (chat) => set({ chat }),
   say: (text) => set({ toast: { text, key: Date.now() } }),

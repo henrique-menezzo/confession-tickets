@@ -83,11 +83,11 @@ function Hero({ onClaim }: { onClaim: () => void }) {
   );
 }
 
-function Row({ t, near }: { t: Theater; near: boolean }) {
+function Row({ t, near, delay }: { t: Theater; near: boolean; delay?: number }) {
   const tier = useTier();
   const out = isOut(t);
   return (
-    <li className={'r11' + (out ? ' out' : '')}>
+    <li className={'r11' + (out ? ' out' : '') + (delay !== undefined ? ' late' : '')} style={delay !== undefined ? { animationDelay: `${delay}ms` } : undefined}>
       <Icon name="pin" size={22} className="r11-pin" />
       <div className="r11-main">
         <p className="r11-name">{t.name}<Status t={t} /></p>
@@ -146,15 +146,23 @@ function Finder() {
   const found = useFlow((s) => s.found);
   const release = useFlow((s) => s.release);
   const [more, setMore] = useState(false);
+  const [loading, setLoading] = useState(false);
   const moreBtn = useRef<HTMLButtonElement>(null);
-  useEffect(() => setMore(false), [found]);
+  useEffect(() => { setMore(false); setLoading(false); }, [found]);
   const near = phase === 'results' && !!found;
   const all = near ? [...found!.theaters, ...(found!.more ?? [])].sort((a, b) => a.miles - b.miles) : [...SAMPLE, ...SAMPLE_MORE];
   const list = more ? all : all.slice(0, PAGE);
   const toggle = () => {
-    setMore(!more);
+    if (loading) return;
+    if (!more) {
+      // a short load, so the new theaters read as fetched, then they come in one after another
+      setLoading(true);
+      setTimeout(() => { setLoading(false); setMore(true); }, 700);
+      return;
+    }
+    setMore(false);
     // folding back up: keep the button where the eye is instead of leaving the reader at the footer
-    if (more) requestAnimationFrame(() => moreBtn.current?.scrollIntoView({ block: 'center' }));
+    requestAnimationFrame(() => moreBtn.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
   };
   return (
     <div className="f11">
@@ -172,10 +180,10 @@ function Finder() {
         <div className="f11-list" key={found?.zip ?? 'sample'}>
           <SoldOutNote />
           {near ? <ListHead count={all.length} /> : <p className="f11-lh">A few of the 100 theaters · enter your ZIP for the ones nearest you</p>}
-          <ul className="r11-list">{list.map((t) => <Row key={t.id} t={t} near={near} />)}</ul>
+          <ul className="r11-list">{list.map((t, i) => <Row key={t.id} t={t} near={near} delay={i >= PAGE ? (i - PAGE) * 60 : undefined} />)}</ul>
           {all.length > PAGE && (
-            <button ref={moreBtn} className="r11-more" onClick={toggle} aria-expanded={more}>
-              {more ? 'Show fewer theaters' : `Show ${all.length - PAGE} more theaters`}<Icon name={more ? 'chevup' : 'chevdown'} size={16} />
+            <button ref={moreBtn} className={'r11-more' + (loading ? ' loading' : '')} onClick={toggle} aria-expanded={more} aria-busy={loading}>
+              {loading ? <><span className="spin" />Loading theaters</> : <>{more ? 'Show fewer theaters' : `Show ${all.length - PAGE} more theaters`}<Icon name={more ? 'chevup' : 'chevdown'} size={16} /></>}
             </button>
           )}
         </div>
