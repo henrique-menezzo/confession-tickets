@@ -8,7 +8,7 @@ import { Icon } from './Icon';
 type ZipVariant = 'hero' | 'fill' | 'big' | 'bar' | 'chat' | 'line';
 
 /** `locateIcon`: the location action as an icon inside the field. `auto`: search as soon as five digits are in. */
-export function ZipForm({ variant = 'fill', cta = 'Find theaters', locate = true, locateIcon = false, auto = false, autoFocus = false, onSearch }: { variant?: ZipVariant; cta?: string; locate?: boolean; locateIcon?: boolean; auto?: boolean; autoFocus?: boolean; onSearch?: () => void }) {
+export function ZipForm({ variant = 'fill', cta = 'Find theaters', locate = true, locateIcon = false, auto = false, iconGo = false, autoFocus = false, onSearch }: { variant?: ZipVariant; cta?: string; locate?: boolean; locateIcon?: boolean; auto?: boolean; iconGo?: boolean; autoFocus?: boolean; onSearch?: () => void }) {
   const zip = useFlow((s) => s.zip);
   const search = useFlow((s) => s.search);
   const doLocate = useFlow((s) => s.locate);
@@ -52,7 +52,9 @@ export function ZipForm({ variant = 'fill', cta = 'Find theaters', locate = true
             <Icon name="locate" size={18} />
           </button>
         )}
-        <button className="zip-go" type="submit">{cta}{variant !== 'chat' && <Icon name="right" size={16} />}{variant === 'chat' && <Icon name="send" size={18} />}</button>
+        {iconGo
+          ? <button className="zip-go icon" type="submit" aria-label={cta} title={cta}><Icon name="search" size={20} stroke={2} /></button>
+          : <button className="zip-go" type="submit">{cta}{variant !== 'chat' && <Icon name="right" size={16} />}{variant === 'chat' && <Icon name="send" size={18} />}</button>}
       </form>
       {(locate || err) && (
         <div className="zip-under">

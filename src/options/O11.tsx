@@ -173,7 +173,7 @@ function Finder() {
           Enter your ZIP code to see the closest showings and claim your seats before they’re gone.
         </p>
       </div>
-      <div className="f11-search"><ZipForm variant="line" cta="Find theaters" locate={false} locateIcon auto /></div>
+      <div className="f11-search"><ZipForm variant="line" cta="Find theaters" locate={false} locateIcon auto iconGo /></div>
       {phase === 'searching' && <Searching rows={4} />}
       {phase === 'far' && <NoneNear />}
       {(phase === 'idle' || near) && (

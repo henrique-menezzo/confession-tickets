@@ -359,52 +359,75 @@ function PaymentDetails() {
 }
 
 // ── Upgrade: only when the person picked it. Pays the difference, like the Last Call frames ─────
+const LIFETIME = 2000;
+const CARDS = [{ id: 'c1', last: '1932', exp: '08/29' }, { id: 'c2', last: '4417', exp: '03/28' }];
+
+/** The upgrade frame from the design file: plan cards, saved cards to pick from, the prorated summary. */
 function UpgradePay() {
-  const plan = useModal((s) => s.plan);
-  const upgrade = useModal((s) => s.upgrade);
   const from = useModal((s) => s.from);
   const reason = useModal((s) => s.reason);
   const go = useModal((s) => s.go);
-  const user = useFlow((s) => s.user);
+  const say = useFlow((s) => s.say);
+  const [tier, setTier] = useState<'aa' | 'life'>('aa');
+  const [card, setCard] = useState(CARDS[0].id);
   const [busy, setBusy] = useState(false);
-  const p = PRICE[plan];
-  const credit = upgrade ? PRICE[from].year : 0;
-  const today = p.year - credit;
-  const withTickets = plan === 'aa' && reason === 'tickets';
+  const credit = PRICE[from].year;
+  const price = tier === 'aa' ? PRICE.aa.year : LIFETIME;
+  const tickets = reason === 'tickets';
   const pay = () => {
     setBusy(true);
     setTimeout(() => {
-      if (plan === 'aa') useFlow.setState({ joined: true });
-      else useFlow.setState({ user: 'member' });
+      useFlow.setState({ joined: true });
       go('done', { back: null });
-    }, 900);
+    }, 1100);
   };
   return (
     <>
       <Bar />
       <div className="tm-main">
-        <Head title={upgrade ? 'Upgrade to All Access' : 'Complete your purchase'} sub={withTickets ? <Where /> : undefined} />
-        <div className="tm-box tm-sum">
-          <div className="tm-row"><span>{p.name}, {plan === 'monthly' ? 'monthly' : 'billed yearly'}</span><span>{money(p.year)}</span></div>
-          {upgrade && <div className="tm-row"><span>{PRICE[from].name} plan credit</span><span className="tm-green">−{money(credit)}</span></div>}
-          {withTickets && <div className="tm-row"><span>{FREE_TICKETS} tickets to Confession</span><span className="tm-green">Included</span></div>}
-          <div className="tm-row total"><span>Today</span><span>{money(today)}</span></div>
+        <Head title={tickets ? 'Upgrade to All Access and get your 3 tickets.' : 'Upgrade to All Access and watch exclusive content.'} sub={tickets ? <Where /> : undefined} />
+        <div className="tm-cards two" role="radiogroup" aria-label="Plan">
+          <button role="radio" aria-checked={tier === 'aa'} className={'tm-card' + (tier === 'aa' ? ' on' : '')} onClick={() => setTier('aa')}>
+            <span className="tm-tag">{tickets ? `+${FREE_TICKETS} FREE TICKETS` : '25% OFF'}</span>
+            <span className="tm-c-name">All Access</span>
+            <span className="tm-c-price"><s>$21</s>$15<small>/mo</small></span>
+            <span className="tm-c-small">{money(PRICE.aa.year)} billed annually</span>
+            <span className="tm-c-text">All content + private Q&amp;A sessions with hosts</span>
+          </button>
+          <button role="radio" aria-checked={tier === 'life'} className={'tm-card' + (tier === 'life' ? ' on' : '')} onClick={() => setTier('life')}>
+            {tickets && <span className="tm-tag">+{FREE_TICKETS} FREE TICKETS</span>}
+            <span className="tm-c-name">Lifetime</span>
+            <span className="tm-c-price gold">$2,000</span>
+            <span className="tm-c-small">billed one time</span>
+            <span className="tm-c-text">All content + private Q&amp;A sessions with hosts</span>
+          </button>
         </div>
-        {user === 'guest' ? (
-          <div className="tm-fields">
-            <label className="tm-field"><span>Email address</span><input type="email" placeholder="you@email.com" autoComplete="email" /></label>
-            <div className="tm-field"><span>Card</span><div className="tm-cardrow"><input placeholder="Card number" inputMode="numeric" autoComplete="off" /><input placeholder="MM / YY" inputMode="numeric" autoComplete="off" /><input placeholder="CVC" inputMode="numeric" autoComplete="off" /></div></div>
+        <div className="tm-box tm-paybox">
+          <div className="tm-pay-h"><b>Payment method</b><button className="tm-mini-link" onClick={() => say('Opens the add card form (prototype).')}>Add payment method</button></div>
+          <div className="tm-paycards" role="radiogroup" aria-label="Card">
+            {CARDS.map((c) => (
+              <button key={c.id} role="radio" aria-checked={card === c.id} className={'tm-paycard' + (card === c.id ? ' on' : '')} onClick={() => setCard(c.id)}>
+                <span className="tm-visa">VISA</span>
+                <span className="tm-num">Visa •••• •••• •••• {c.last}</span>
+                <span className="tm-mini-link" role="presentation">Edit</span>
+                <span className="tm-radio" aria-hidden />
+              </button>
+            ))}
           </div>
-        ) : (
-          <div className="tm-saved"><span className="tm-cc" />Visa •••• 4242<span className="tm-exp">08/29</span></div>
-        )}
+          <div className="tm-sum2">
+            <div className="tm-row"><span>{tier === 'aa' ? 'All Access, billed yearly' : 'Lifetime, one time'}</span><span>{money(price)}</span></div>
+            <div className="tm-row"><span>Prorated credit</span><span className="tm-green">−{money(credit)}</span></div>
+            {tickets && <div className="tm-row"><span>{FREE_TICKETS} tickets to Confession</span><span className="tm-green">Included</span></div>}
+            <div className="tm-row total"><span>{tier === 'aa' ? 'All Access' : 'Lifetime'} today</span><span>{money(price - credit)}</span></div>
+          </div>
+        </div>
         <p className="tm-legal">
-          By clicking <b>Agree &amp; Continue</b>, you authorize The Daily Wire to charge your card today with the amount shown plus tax, and again to automatically renew at the then-current rate plus tax. You can cancel any time before the next renewal. Fees for unused time are non-refundable.
-          {withTickets && <> {DISCLOSURE}</>}
+          By clicking <b>Upgrade</b>, you authorize The Daily Wire to charge your card today with the amount shown plus tax{tier === 'aa' ? ', and again to automatically renew at the then-current rate plus tax. You can cancel any time before the next renewal' : ''}. Fees for unused time are non-refundable.
+          {tickets && <> {DISCLOSURE}</>}
         </p>
       </div>
       <div className="tm-foot">
-        <button className="tm-btn" onClick={pay} disabled={busy}>{busy ? <span className="spin dark" /> : 'Agree & Continue'}</button>
+        <button className="tm-btn" onClick={pay} disabled={busy}>{busy ? <><span className="spin dark" />Upgrading…</> : `Upgrade for ${money(price - credit)}`}</button>
         <p className="tm-secure"><Icon name="shield" size={16} />Secure and Encrypted</p>
       </div>
     </>
