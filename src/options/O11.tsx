@@ -93,7 +93,7 @@ function Row({ t, near }: { t: Theater; near: boolean }) {
           {t.shows.map((s) => <span key={s.id} className={s.status === 'out' ? 'gone' : ''}>{s.time} · {s.format}</span>)}
         </p>
       </div>
-      <button className="btn btn-g r11-go" disabled={out} onClick={() => openTickets(t)}>
+      <button className="btn btn-w r11-go" disabled={out} onClick={() => openTickets(t)}>
         {out ? 'Sold out' : tier === 'aa' ? 'Claim tickets' : 'Get tickets'}
       </button>
     </li>

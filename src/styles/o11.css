@@ -57,7 +57,7 @@
 
 /* ZIP: bordered field with the button inside, location to the right */
 .zip-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.zip-line .zip-form { flex: 0 1 625px; min-width: 0; height: 56px; padding: 4px; border-radius: 6px; box-shadow: inset 0 0 0 1px var(--rule, #292929); transition: box-shadow 0.2s; }
+.zip-line .zip-form { flex: 1 1 100%; min-width: 0; height: 56px; padding: 4px; border-radius: 6px; box-shadow: inset 0 0 0 1px var(--rule, #292929); transition: box-shadow 0.2s; }
 .zip-line .zip-form:focus-within { box-shadow: inset 0 0 0 1px #4a4a4a; }
 .zip-line .zip-go { border-radius: 4px; }
 .zip-line .zip-go svg { display: none; }
@@ -81,7 +81,7 @@
 .r11-go { height: 44px; padding: 0 18px; font-size: 15px; align-self: center; }
 .r11-go:disabled { background: transparent; color: var(--dim); cursor: default; }
 /* one white button at a time: the row you point at, never all five */
-.r11:hover .r11-go:not(:disabled), .r11-go:focus-visible { background: var(--ink); color: #000; }
+.r11-go:not(:disabled):hover { background: #fff; }
 .r11-more { align-self: flex-start; margin-top: 12px; height: 44px; }
 .r11.out .r11-name { color: var(--mute); }
 /* Release date: live badge on the 11th, a second hero action to watch at home */
