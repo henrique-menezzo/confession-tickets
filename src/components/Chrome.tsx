@@ -2,7 +2,8 @@
 // the toast, and the prototype controls.
 import { useEffect, useState } from 'react';
 import { FAQ } from '../data/data';
-import { useFlow, type Release, type User } from '../store';
+import { useFlow, type FinderV, type Release, type User } from '../store';
+import { FV_NAMES } from '../options/FinderVariants';
 import { Icon } from './Icon';
 
 export function Chat({ label = 'Questions about the screening?', fab = true }: { label?: string; fab?: boolean }) {
@@ -66,6 +67,7 @@ function Seg<T extends string | number>({ label, items, value, set, className = 
   );
 }
 
+const FINDERS = ([1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as FinderV[]).map((v) => [v, String(v)] as [FinderV, string]);
 const KEY = 'confession-proto-open';
 
 /** Prototype controls: tabs at the bottom that fold into one small button. */
@@ -75,6 +77,8 @@ export function Proto() {
   const release = useFlow((s) => s.release);
   const setRelease = useFlow((s) => s.setRelease);
   const reset = useFlow((s) => s.reset);
+  const fv = useFlow((s) => s.fv);
+  const setFv = useFlow((s) => s.setFv);
   const [open, setOpen] = useState(() => {
     try { const v = localStorage.getItem(KEY); if (v !== null) return v === '1'; } catch { /* storage blocked */ }
     return !window.matchMedia('(max-width: 760px)').matches;
@@ -91,6 +95,7 @@ export function Proto() {
     <div className="pt" role="region" aria-label="Prototype controls">
       <Seg label="Viewer" items={USERS} value={user} set={setUser} />
       <Seg label="Date" items={RELEASES} value={release} set={setRelease} />
+      <Seg label={`Finder · ${FV_NAMES[fv]}`} items={FINDERS} value={fv} set={setFv} className="pt-fv" />
       <div className="pt-end">
         <p className="pt-hint">ZIP <b>37064</b> nearby · <b>30303</b> sold out · <b>59718</b> none</p>
         <button className="pt-icon" onClick={reset} aria-label="Start over" title="Start over"><Icon name="reset" size={16} /></button>

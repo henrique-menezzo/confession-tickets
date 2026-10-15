@@ -8,6 +8,7 @@ import { Nav, Wordmark } from '../components/ShowPage';
 import { ListHead, Status, ZipForm } from '../components/Finder';
 import { Chat } from '../components/Chrome';
 import { openTickets, openWatch } from './TicketModal';
+import { Head, Rows } from './FinderVariants';
 import { Icon } from '../components/Icon';
 import dwPlus from '../data/footer/dwplus-logo.svg';
 import appStore from '../data/footer/app-store.svg';
@@ -181,7 +182,7 @@ function Skeleton() {
 function Finder() {
   const phase = useFlow((s) => s.phase);
   const found = useFlow((s) => s.found);
-  const release = useFlow((s) => s.release);
+  const fv = useFlow((s) => s.fv);
   const [more, setMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const moreBtn = useRef<HTMLButtonElement>(null);
@@ -203,22 +204,17 @@ function Finder() {
     requestAnimationFrame(() => moreBtn.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
   };
   return (
-    <div className="f11">
-      <div className="f11-head">
-        <h2 className="f11-h">{release === 'day' ? 'Find a theater for tonight' : 'Find a theater near you'}</h2>
-        <p className="f11-intro">
-          <span className="f11-intro-a">{release === 'day' ? 'Confession screens tonight in 100 theaters for DailyWire+ members, and on DailyWire+ the same night. ' : `Confession screens in 100 theaters nationwide on ${DATE.long} for DailyWire+ members. `}</span>
-          Enter your ZIP code to see the closest showings and claim your seats before they’re gone.
-        </p>
-      </div>
-      <div className="f11-search"><ZipForm variant="line" cta="Find theaters" locate={false} locateIcon auto iconGo /></div>
+    <div className={'f11 fvw' + fv}>
+      <Head fv={fv} />
       {phase === 'searching' && <Skeleton />}
       {phase === 'far' && <NoneNear />}
       {(phase === 'idle' || near) && (
         <div className="f11-list" key={found?.zip ?? 'sample'}>
           <SoldOutNote />
           {near ? <ListHead count={all.length} /> : <p className="f11-lh">A few of the 100 theaters · enter your ZIP for the ones nearest you</p>}
-          <ul className="r11-list">{list.map((t, i) => <Row key={t.id} t={t} near={near} closest={near && t.id === closestId} delay={i >= PAGE ? (i - PAGE) * 60 : undefined} />)}</ul>
+          {fv === 1
+            ? <ul className="r11-list">{list.map((t, i) => <Row key={t.id} t={t} near={near} closest={near && t.id === closestId} delay={i >= PAGE ? (i - PAGE) * 60 : undefined} />)}</ul>
+            : <Rows fv={fv} list={list} near={near} closestId={closestId} lateFrom={PAGE} />}
           {all.length > PAGE && (
             <button ref={moreBtn} className={'r11-more' + (loading ? ' loading' : '')} onClick={toggle} aria-expanded={more} aria-busy={loading}>
               {loading ? <><span className="spin" />Loading theaters</> : <>{more ? 'Show fewer theaters' : `Show ${all.length - PAGE} more theaters`}<Icon name={more ? 'chevup' : 'chevdown'} size={16} /></>}
