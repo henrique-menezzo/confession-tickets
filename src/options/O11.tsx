@@ -1,8 +1,8 @@
 // 11 · Henrique's Figma page ("1440" in the Untitled file), built for the web and cleaned up.
 // The finder sits next to the poster, above the synopsis; Get tickets opens the DW ticket modal.
 // The page follows the single release date: before Nov 11, the day itself, and after.
-import { useRef, useState } from 'react';
-import { ART, CAST, DATE, SAMPLE, SYNOPSIS, allOut, isOut, type Theater } from '../data/data';
+import { useEffect, useRef, useState } from 'react';
+import { ART, CAST, DATE, SAMPLE, SAMPLE_MORE, SYNOPSIS, allOut, isOut, type Theater } from '../data/data';
 import { useFlow, useTier } from '../store';
 import { Nav, Wordmark } from '../components/ShowPage';
 import { ListHead, Searching, Status, ZipForm } from '../components/Finder';
@@ -55,26 +55,29 @@ function Hero({ onClaim }: { onClaim: () => void }) {
       <button className="h11-play" aria-label="Play trailer"><Icon name="play" size={36} /></button>
       <button className="h11-mute h11-mute-m" aria-label="Unmute"><Icon name="mute" size={20} /></button>
       <div className="h11-inner">
+        {/* desktop: the action row runs across the hero, Trailer and Share on the right, sound above them */}
         <div className="h11-copy">
           <span className={'coming' + (release === 'day' ? ' live' : '')}>{release === 'day' && <i className="live-dot" />}{BADGE[release]}</span>
           <img className="h11-title" src={ART.title} alt="Confession. Rob Lowe, James Franco." />
-          <div className="h11-cta">
-            <div className="h11-btns">
-              {release === 'after' ? (
-                <WatchButton className="btn btn-w h11-btn" />
-              ) : (
-                <>
-                  <button className="btn btn-w h11-btn" onClick={onClaim}>
-                    <Icon name={tier === 'guest' ? 'lock' : 'ticket'} size={20} />{label}
-                  </button>
-                  {release === 'day' && <WatchButton className="btn h11-btn h11-btn2" />}
-                </>
-              )}
-            </div>
-            <p className="h11-note">{note}</p>
-          </div>
         </div>
         <button className="h11-mute" aria-label="Unmute"><Icon name="mute" size={20} /></button>
+        <div className="h11-btns">
+          {release === 'after' ? (
+            <WatchButton className="btn btn-w h11-btn" />
+          ) : (
+            <>
+              <button className="btn btn-w h11-btn" onClick={onClaim}>
+                <Icon name={tier === 'guest' ? 'lock' : 'ticket'} size={20} />{label}
+              </button>
+              {release === 'day' && <WatchButton className="btn h11-btn h11-btn2" />}
+            </>
+          )}
+        </div>
+        <div className="h11-tools">
+          <button className="t11-b"><Icon name="movie" size={16} />Trailer</button>
+          <button className="t11-b"><Icon name="share" size={16} />Share</button>
+        </div>
+        <p className="h11-note">{note}</p>
       </div>
     </section>
   );
@@ -143,9 +146,16 @@ function Finder() {
   const found = useFlow((s) => s.found);
   const release = useFlow((s) => s.release);
   const [more, setMore] = useState(false);
+  const moreBtn = useRef<HTMLButtonElement>(null);
+  useEffect(() => setMore(false), [found]);
   const near = phase === 'results' && !!found;
-  const all = near ? found!.theaters : SAMPLE;
-  const list = more || !near ? all : all.slice(0, PAGE);
+  const all = near ? [...found!.theaters, ...(found!.more ?? [])].sort((a, b) => a.miles - b.miles) : [...SAMPLE, ...SAMPLE_MORE];
+  const list = more ? all : all.slice(0, PAGE);
+  const toggle = () => {
+    setMore(!more);
+    // folding back up: keep the button where the eye is instead of leaving the reader at the footer
+    if (more) requestAnimationFrame(() => moreBtn.current?.scrollIntoView({ block: 'center' }));
+  };
   return (
     <div className="f11">
       <div className="f11-head">
@@ -161,10 +171,12 @@ function Finder() {
       {(phase === 'idle' || near) && (
         <div className="f11-list" key={found?.zip ?? 'sample'}>
           <SoldOutNote />
-          {near ? <ListHead /> : <p className="f11-lh">A few of the 100 theaters · enter your ZIP for the ones nearest you</p>}
+          {near ? <ListHead count={all.length} /> : <p className="f11-lh">A few of the 100 theaters · enter your ZIP for the ones nearest you</p>}
           <ul className="r11-list">{list.map((t) => <Row key={t.id} t={t} near={near} />)}</ul>
-          {near && all.length > PAGE && !more && (
-            <button className="btn btn-g r11-more" onClick={() => setMore(true)}>Show more theaters<Icon name="chevdown" size={16} /></button>
+          {all.length > PAGE && (
+            <button ref={moreBtn} className="r11-more" onClick={toggle} aria-expanded={more}>
+              {more ? 'Show fewer theaters' : `Show ${all.length - PAGE} more theaters`}<Icon name={more ? 'chevup' : 'chevdown'} size={16} />
+            </button>
           )}
         </div>
       )}

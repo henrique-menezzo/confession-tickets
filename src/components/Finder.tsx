@@ -93,11 +93,11 @@ export function Showtimes({ t, size = 'md', toggle = false }: { t: Theater; size
   );
 }
 
-export function ListHead({ change = true }: { change?: boolean }) {
+export function ListHead({ change = true, count }: { change?: boolean; count?: number }) {
   const found = useFlow((s) => s.found);
   const clear = useFlow((s) => s.clearSearch);
   if (!found) return null;
-  const n = found.theaters.length;
+  const n = count ?? found.theaters.length;
   return (
     <div className="list-head">
       <p><b>{n} theaters</b> within {RADIUS} miles of <b>{found.place}</b></p>

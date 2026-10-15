@@ -246,7 +246,7 @@ function Plans() {
         <div className="tm-cards three" role="radiogroup" aria-label="Plan">
           {(['monthly', 'annual', 'aa'] as PlanId[]).map((id) => {
             const p = PRICE[id];
-            const tag = id === 'aa' && tickets ? `+${FREE_TICKETS} TICKETS` : id === 'annual' && !tickets ? 'MOST POPULAR' : id === 'aa' ? '25% OFF' : null;
+            const tag = id === 'aa' && tickets ? `+${FREE_TICKETS} FREE TICKETS` : id === 'annual' && !tickets ? 'MOST POPULAR' : id === 'aa' ? '25% OFF' : null;
             return (
               <button key={id} role="radio" aria-checked={plan === id} className={'tm-card' + (plan === id ? ' on' : '')} onClick={() => useModal.setState({ plan: id })}>
                 {tag && <span className={'tm-tag' + (tag === '25% OFF' ? ' light' : '')}>{tag}</span>}

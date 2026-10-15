@@ -68,7 +68,21 @@ const NEAR: Theater[] = [
 
 const FAR_NEAREST = T('cinemark-billings', 'Cinemark Billings', '2456 Central Ave', 'Billings, MT', 142, 78, [['7:00 PM', 'Standard', 'open']]);
 
-export interface Lookup { zip: string; place: string; theaters: Theater[]; nearest?: Theater }
+// Ten more inside the 50-mile circle around Franklin. Only option 11 lists them, behind Show more.
+const NEAR_MORE: Theater[] = [
+  T('regal-brentwood', 'Regal Brentwood 12', '700 Old Hickory Blvd', 'Brentwood, TN', 8.7, 20, [['7:00 PM', 'Standard', 'open']]),
+  T('marcus-spring-hill', 'Marcus Spring Hill Cinema', '5000 Northfield Ln', 'Spring Hill, TN', 9.6, 200, [['7:00 PM', 'UltraScreen', 'few'], ['9:15 PM', 'Standard', 'open']]),
+  T('sm-grill-antioch', 'Studio Movie Grill', '5310 Cane Ridge Rd', 'Antioch, TN', 19.4, 70, [['7:30 PM', 'Standard', 'open']]),
+  T('malco-smyrna', 'Malco Smyrna Cinema', '100 Movie Row', 'Smyrna, TN', 22.9, 105, [['7:00 PM', 'Standard', 'out']]),
+  T('amc-columbia', 'AMC Columbia 8', '1155 Nashville Hwy', 'Columbia, TN', 24.3, 205, [['7:00 PM', 'Standard', 'open']]),
+  T('regal-providence', 'Regal Providence', '401 S Mt Juliet Rd', 'Mt. Juliet, TN', 33.0, 60, [['7:00 PM', 'RPX', 'few']]),
+  T('lewisburg-cinema', 'Lewisburg Cinema 5', '1110 N Ellington Pkwy', 'Lewisburg, TN', 34.8, 160, [['7:30 PM', 'Standard', 'open']]),
+  T('premiere-dickson', 'Premiere Dickson 8', '226 Henslee Dr', 'Dickson, TN', 36.4, 285, [['7:00 PM', 'Standard', 'open']]),
+  T('regal-indian-lake', 'Regal Indian Lake', '300 Indian Lake Blvd', 'Hendersonville, TN', 38.2, 25, [['7:30 PM', 'Standard', 'out']]),
+  T('cinemark-lebanon', 'Cinemark Lebanon', '300 Leeville Pike', 'Lebanon, TN', 41.5, 75, [['7:00 PM', 'XD', 'open']]),
+];
+
+export interface Lookup { zip: string; place: string; theaters: Theater[]; nearest?: Theater; more?: Theater[] }
 
 const PLACES: Record<string, string> = { '37064': 'Franklin, TN', '37067': 'Franklin, TN', '59718': 'Bozeman, MT', '37203': 'Nashville, TN', '30303': 'Atlanta, GA' };
 
@@ -86,7 +100,7 @@ export function lookup(zip: string): Lookup {
   const far = /^(59|82|83|99|97)/.test(zip);
   if (far) return { zip, place, theaters: [], nearest: FAR_NEAREST };
   if (zip === '30303') return { zip, place, theaters: SOLD };
-  return { zip, place, theaters: NEAR };
+  return { zip, place, theaters: NEAR, more: NEAR_MORE };
 }
 
 export const LOCATION_ZIP = '37064';
@@ -99,6 +113,20 @@ export const SAMPLE: Theater[] = [
   T('amc-northpark', 'AMC NorthPark 15', '8687 N Central Expy', 'Dallas, TX', 0, 0, [['7:00 PM', 'Dolby Cinema', 'open']]),
   T('regal-atlantic', 'Regal Atlantic Station', '261 19th St NW', 'Atlanta, GA', 0, 0, [['7:30 PM', 'Standard', 'open']]),
   T('harkins-tempe', 'Harkins Tempe Marketplace', '2000 E Rio Salado Pkwy', 'Phoenix, AZ', 0, 0, [['7:00 PM', 'IMAX', 'out']]),
+];
+
+// Ten more of the 100, for Show more before a ZIP is in.
+export const SAMPLE_MORE: Theater[] = [
+  T('amc-river-east', 'AMC River East 21', '322 E Illinois St', 'Chicago, IL', 0, 0, [['7:00 PM', 'Dolby Cinema', 'open']]),
+  T('regal-pinnacle', 'Regal Pinnacle', '11240 Parkside Dr', 'Knoxville, TN', 0, 0, [['7:00 PM', 'Standard', 'few']]),
+  T('cinemark-west-plano', 'Cinemark West Plano', '3800 Dallas Pkwy', 'Plano, TX', 0, 0, [['7:30 PM', 'XD', 'open']]),
+  T('amc-disney-springs', 'AMC Disney Springs 24', '1500 E Buena Vista Dr', 'Orlando, FL', 0, 0, [['7:00 PM', 'Dolby Cinema', 'open']]),
+  T('regal-crossroads', 'Regal Crossroads', '206 Crossroads Blvd', 'Cary, NC', 0, 0, [['7:00 PM', 'IMAX', 'out']]),
+  T('amc-easton', 'AMC Easton 30', '275 Easton Town Center', 'Columbus, OH', 0, 0, [['7:00 PM', 'Standard', 'open']]),
+  T('marcus-majestic', 'Marcus Majestic Cinema', '770 N Springdale Rd', 'Brookfield, WI', 0, 0, [['7:30 PM', 'UltraScreen', 'open']]),
+  T('regal-pioneer', 'Regal Pioneer Place', '340 SW Morrison St', 'Portland, OR', 0, 0, [['7:00 PM', 'Standard', 'open']]),
+  T('amc-westminster', 'AMC Westminster Promenade 24', '10655 Westminster Blvd', 'Denver, CO', 0, 0, [['7:00 PM', 'Dolby Cinema', 'few']]),
+  T('cinemark-tinseltown-jax', 'Cinemark Tinseltown', '4535 Southside Blvd', 'Jacksonville, FL', 0, 0, [['7:00 PM', 'XD', 'open']]),
 ];
 
 export const isOut = (t: Theater) => t.shows.every((s) => s.status === 'out');
