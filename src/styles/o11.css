@@ -74,17 +74,25 @@
 
 /* Theater rows: rules between them, no cards */
 .r11-list { list-style: none; margin: 0; padding: 0; }
-.r11 { position: relative; display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 0 14px; align-items: start; padding: 20px 0; animation: rise 0.4s var(--ease) both; }
-.r11 + .r11::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--rule); }
-.r11-pin { color: var(--dim); margin-top: 1px; }
+/* Theater row, web: pin, then the name, where and how far, the times; the one action trails.
+   Inside a row the steps are 4px; rows sit 40px apart with a rule, so each theater reads as one group. */
+.r11 { position: relative; display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; column-gap: 16px; align-items: center; padding-block: 20px; animation: rise 0.4s var(--ease) both; }
+.r11 + .r11::before { content: ''; position: absolute; inset-block-start: 0; inset-inline: 0; block-size: 1px; background: var(--rule); }
+.r11-pin { align-self: start; margin-block-start: 1px; color: var(--dim); }
+.r11.closest .r11-pin { color: var(--ink); }
 .r11-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.r11-name { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 10px; font-size: 15px; line-height: 19px; font-weight: 600; }
-.r11-meta { font-size: 13px; line-height: 20px; color: var(--mute); }
-.r11-times { display: flex; flex-wrap: wrap; gap: 0 16px; }
-.r11-times .gone { text-decoration: line-through; color: var(--dim); }
-.r11-go { height: 44px; padding: 0 18px; font-size: 15px; align-self: center; }
-.r11-go:disabled { background: transparent; color: var(--dim); cursor: default; }
-/* one white button at a time: the row you point at, never all five */
+.r11-name { font-size: 16px; line-height: 20px; font-weight: 600; text-wrap: balance; }
+.r11-meta { font-size: 13px; line-height: 18px; color: var(--mute); }
+.r11-meta b { font-weight: 600; color: var(--ink); }
+.r11-times { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 8px; margin-block-start: 4px; font-size: 14px; line-height: 20px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.r11-t + .r11-t::before { content: '·'; margin-inline-end: 8px; color: var(--dim); }
+.r11-t em { font-style: normal; color: var(--mute); }
+.r11-t.gone { color: var(--dim); text-decoration: line-through; }
+.r11-few { display: inline-flex; align-items: center; gap: 6px; margin-inline-start: 8px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--red-ink); }
+.r11-few i { inline-size: 6px; block-size: 6px; border-radius: 50%; background: currentColor; }
+.r11-bar { display: none; }
+.r11-go { height: 44px; padding-inline: 18px; font-size: 15px; }
+.r11-out { padding-inline: 18px; font-size: 14px; font-weight: 600; color: var(--dim); }
 .r11-go:not(:disabled):hover { background: #fff; }
 /* Show more: separator-coloured outline, no fill, white label */
 .r11-more { width: 100%; height: 48px; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 4px; box-shadow: inset 0 0 0 1px var(--rule); font-size: 15px; font-weight: 600; color: var(--ink); transition: box-shadow 0.2s; }
@@ -102,8 +110,6 @@
 .sk11 .sk11-btn { width: 114px; height: 44px; align-self: center; border-radius: 4px; }
 @keyframes sk11 { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 .r11.out .r11-name { color: var(--mute); }
-/* the phone row is its own markup; hidden on the web */
-.r11p { display: none; }
 /* Release date: live badge on the 11th, a second hero action to watch at home */
 .coming.live { display: inline-flex; align-items: center; gap: 8px; }
 .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red-ink); animation: pulse 1.6s ease-in-out infinite; }
@@ -343,24 +349,19 @@
   .zip-line .zip-form { flex: 1 1 100%; }
   .zip-line .zip-field { padding: 0 10px; }
   .f11-list { gap: 4px; }
-  /* Phone theater row: distance and city small on top, the name, the times, one button centred on the block */
-  .r11 { display: block; padding: 18px 0; }
-  .r11 > .r11-pin, .r11 > .r11-main, .r11 > .r11-go { display: none; }
-  .r11p { display: flex; align-items: center; gap: 16px; }
-  .r11p-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-  .r11p-eye { font-size: 11px; line-height: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--mute); font-variant-numeric: tabular-nums; }
-  .r11p-eye b { font-weight: 600; color: var(--ink); }
-  .r11p-nm { margin-top: 6px; font-size: 16px; line-height: 20px; font-weight: 600; text-wrap: balance; }
-  .r11p-when { margin-top: 4px; display: flex; flex-wrap: wrap; gap: 0 6px; font-size: 13px; line-height: 18px; color: var(--soft); font-variant-numeric: tabular-nums; }
-  .r11p-when span + span::before { content: '·'; margin-right: 6px; color: var(--dim); }
-  .r11p-when em { font-style: normal; color: var(--mute); }
-  .r11p-when .gone { color: var(--dim); text-decoration: line-through; }
-  .r11p-few { margin-top: 6px; display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--red-ink); }
-  .r11p-few i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-  .r11p-go { flex: none; height: 40px; padding: 0 16px; font-size: 14px; }
-  .r11p-out { flex: none; font-size: 13px; font-weight: 600; color: var(--dim); }
-  .r11.out .r11p-nm { color: var(--mute); }
-  .r11.out .r11p-when span + span::before { text-decoration: none; }
+  /* Theater row, phone: the same row without the pin; distance becomes a bar against the 50-mile area */
+  .r11 { grid-template-columns: minmax(0, 1fr) auto; padding-block: 18px; }
+  .r11-pin, .r11-dist { display: none; }
+  .r11-bar { display: flex; align-items: center; gap: 10px; margin-block: 4px 2px; font-size: 12px; line-height: 16px; color: var(--mute); font-variant-numeric: tabular-nums; }
+  .r11-bar b { position: relative; inline-size: 96px; block-size: 3px; border-radius: 2px; background: #262626; overflow: hidden; }
+  .r11-bar i { position: absolute; inset-block: 0; inset-inline-start: 0; border-radius: 2px; background: var(--ink); }
+  .r11.out .r11-bar i { background: var(--dim); }
+  /* times can wrap here: space instead of a separator, so no dot is left hanging at a line start */
+  .r11-times { margin-block-start: 2px; column-gap: 14px; font-size: 13px; line-height: 18px; }
+  .r11-t + .r11-t::before { display: none; }
+  .r11-few { flex-basis: 100%; margin-inline-start: 0; margin-block-start: 2px; }
+  .r11-go { height: 40px; padding-inline: 16px; font-size: 14px; }
+  .r11-out { padding-inline: 0; font-size: 13px; }
 
   .sk11 .r11 { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 16px; }
   .sk11 .sk11-pin { display: none; }

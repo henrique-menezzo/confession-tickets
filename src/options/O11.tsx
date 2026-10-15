@@ -2,13 +2,13 @@
 // The finder sits next to the poster, above the synopsis; Get tickets opens the DW ticket modal.
 // The page follows the single release date: before Nov 11, the day itself, and after.
 import { useEffect, useRef, useState } from 'react';
-import { ART, CAST, DATE, SAMPLE, SAMPLE_MORE, SYNOPSIS, allOut, isOut, type Theater } from '../data/data';
+import { ART, CAST, DATE, RADIUS, SAMPLE, SAMPLE_MORE, SYNOPSIS, allOut, isOut, type Theater } from '../data/data';
 import { useFlow, useTier } from '../store';
 import { Nav, Wordmark } from '../components/ShowPage';
-import { ListHead, Status, ZipForm } from '../components/Finder';
+import { ListHead, ZipForm } from '../components/Finder';
 import { Chat } from '../components/Chrome';
 import { openTickets, openWatch } from './TicketModal';
-import { Head, Rows } from './FinderVariants';
+
 import { Icon } from '../components/Icon';
 import dwPlus from '../data/footer/dwplus-logo.svg';
 import appStore from '../data/footer/app-store.svg';
@@ -84,35 +84,30 @@ function Hero({ onClaim }: { onClaim: () => void }) {
   );
 }
 
+/** One row for web and phone. Name first, then where and how far, then the times; seats and the
+ *  action trail. Web keeps the pin and says the distance in words; phones draw it as a bar against
+ *  the 50-mile screening area instead. */
 function Row({ t, near, delay, closest = false }: { t: Theater; near: boolean; delay?: number; closest?: boolean }) {
   const tier = useTier();
   const out = isOut(t);
   const few = !out && t.shows.some((s) => s.status === 'few');
-  const label = out ? 'Sold out' : tier === 'aa' ? 'Claim tickets' : 'Get tickets';
   return (
-    <li className={'r11' + (out ? ' out' : '') + (delay !== undefined ? ' late' : '')} style={delay !== undefined ? { animationDelay: `${delay}ms` } : undefined}>
-      {/* web row */}
+    <li className={'r11' + (out ? ' out' : '') + (closest ? ' closest' : '') + (delay !== undefined ? ' late' : '')} style={delay !== undefined ? { animationDelay: `${delay}ms` } : undefined}>
       <Icon name="pin" size={22} className="r11-pin" />
       <div className="r11-main">
-        <p className="r11-name">{t.name}<Status t={t} /></p>
-        <p className="r11-meta">{near ? `${t.city} · ${t.miles} miles` : t.city}</p>
-        <p className="r11-meta r11-times">
-          {t.shows.map((s) => <span key={s.id} className={s.status === 'out' ? 'gone' : ''}>{s.time} · {s.format}</span>)}
+        <p className="r11-name">{t.name}</p>
+        <p className="r11-meta">{closest && <b>Closest · </b>}{t.city}{near && <span className="r11-dist"> · {t.miles} miles</span>}</p>
+        {near && (
+          <p className="r11-bar" aria-hidden><b><i style={{ inlineSize: `${Math.min(100, (t.miles / RADIUS) * 100)}%` }} /></b>{t.miles} mi</p>
+        )}
+        <p className="r11-times">
+          {t.shows.map((s) => <span key={s.id} className={'r11-t' + (s.status === 'out' ? ' gone' : '')}>{s.time}{s.format !== 'Standard' && <em> {s.format}</em>}</span>)}
+          {few && <span className="r11-few"><i />Few seats left</span>}
         </p>
       </div>
-      <button className="btn btn-w r11-go" disabled={out} onClick={() => openTickets(t)}>{label}</button>
-      {/* phone row: where it is, what it is, when, then one button */}
-      <div className="r11p">
-        <div className="r11p-info">
-          <p className="r11p-eye">{closest && <b>Closest · </b>}{near ? `${t.miles} mi · ${t.city}` : t.city}</p>
-          <p className="r11p-nm">{t.name}</p>
-          <p className="r11p-when">
-            {t.shows.map((s) => <span key={s.id} className={s.status === 'out' ? 'gone' : ''}>{s.time}{s.format !== 'Standard' && <em> {s.format}</em>}</span>)}
-          </p>
-          {few && <p className="r11p-few"><i />Few seats left</p>}
-        </div>
-        {out ? <span className="r11p-out">Sold out</span> : <button className="btn btn-w r11p-go" onClick={() => openTickets(t)}>{label}</button>}
-      </div>
+      {out
+        ? <span className="r11-out">Sold out</span>
+        : <button className="btn btn-w r11-go" onClick={() => openTickets(t)}>{tier === 'aa' ? 'Claim tickets' : 'Get tickets'}</button>}
     </li>
   );
 }
@@ -153,6 +148,23 @@ function SoldOutNote() {
   );
 }
 
+/** Title, what and when, and the search. */
+function Head() {
+  const release = useFlow((s) => s.release);
+  return (
+    <>
+      <div className="f11-head">
+        <h2 className="f11-h">{release === 'day' ? 'Find a theater for tonight' : 'Find a theater near you'}</h2>
+        <p className="f11-intro">
+          <span className="f11-intro-a">{release === 'day' ? 'Confession screens tonight in 100 theaters for DailyWire+ members, and on DailyWire+ the same night. ' : `Confession screens in 100 theaters nationwide on ${DATE.long} for DailyWire+ members. `}</span>
+          Enter your ZIP code to see the closest showings and claim your seats before they’re gone.
+        </p>
+      </div>
+      <div className="f11-search"><ZipForm variant="line" cta="Find theaters" locate={false} locateIcon auto iconGo /></div>
+    </>
+  );
+}
+
 const PAGE = 5;
 
 /** Loading: the same rows as the results, drawn as quiet bars. No boxes, same rules, same spacing. */
@@ -182,7 +194,6 @@ function Skeleton() {
 function Finder() {
   const phase = useFlow((s) => s.phase);
   const found = useFlow((s) => s.found);
-  const fv = useFlow((s) => s.fv);
   const [more, setMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const moreBtn = useRef<HTMLButtonElement>(null);
@@ -204,17 +215,15 @@ function Finder() {
     requestAnimationFrame(() => moreBtn.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }));
   };
   return (
-    <div className={'f11 fvw' + fv}>
-      <Head fv={fv} />
+    <div className="f11">
+      <Head />
       {phase === 'searching' && <Skeleton />}
       {phase === 'far' && <NoneNear />}
       {(phase === 'idle' || near) && (
         <div className="f11-list" key={found?.zip ?? 'sample'}>
           <SoldOutNote />
           {near ? <ListHead count={all.length} /> : <p className="f11-lh">A few of the 100 theaters · enter your ZIP for the ones nearest you</p>}
-          {fv === 1
-            ? <ul className="r11-list">{list.map((t, i) => <Row key={t.id} t={t} near={near} closest={near && t.id === closestId} delay={i >= PAGE ? (i - PAGE) * 60 : undefined} />)}</ul>
-            : <Rows fv={fv} list={list} near={near} closestId={closestId} lateFrom={PAGE} />}
+          <ul className="r11-list">{list.map((t, i) => <Row key={t.id} t={t} near={near} closest={near && t.id === closestId} delay={i >= PAGE ? (i - PAGE) * 60 : undefined} />)}</ul>
           {all.length > PAGE && (
             <button ref={moreBtn} className={'r11-more' + (loading ? ' loading' : '')} onClick={toggle} aria-expanded={more} aria-busy={loading}>
               {loading ? <><span className="spin" />Loading theaters</> : <>{more ? 'Show fewer theaters' : `Show ${all.length - PAGE} more theaters`}<Icon name={more ? 'chevup' : 'chevdown'} size={16} /></>}

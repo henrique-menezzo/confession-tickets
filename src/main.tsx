@@ -10,7 +10,6 @@ import './styles/base.css';
 import './styles/page.css';
 import './styles/finder.css';
 import './styles/o11.css';
-import './styles/fv.css';
 import App from './App';
 
 createRoot(document.getElementById('root')!).render(<App />);
