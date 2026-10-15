@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { CODE, LOCATION_ZIP, lookup, type Lookup, type Show, type Theater } from './data/data';
+import { CODE, LOCATION_ZIP, TICKETSPICE_URL, lookup, type Lookup, type Show, type Theater } from './data/data';
 
 export type User = 'guest' | 'member' | 'aa';
 export type Phase = 'idle' | 'searching' | 'results' | 'far';
@@ -91,6 +91,8 @@ export const useFlow = create<Flow>((set, get) => ({
     const { user, joined } = get();
     const hasCode = user === 'aa' || joined;
     if (hasCode) navigator.clipboard?.writeText(CODE).catch(() => {});
+    // same click as the button, so the new tab is not treated as a popup
+    window.open(TICKETSPICE_URL, '_blank', 'noopener');
     set({ done: true });
     get().say(hasCode ? 'Code copied. Opening TicketSpice in a new tab.' : 'Opening TicketSpice in a new tab.');
   },

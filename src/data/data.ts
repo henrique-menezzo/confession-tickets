@@ -34,6 +34,7 @@ export const TICKET_PRICE = 15; // placeholder member price per ticket
 export const RADIUS = 50; // PRD: "if a theater is within ~50 miles"
 export const THEATER_COUNT = 100;
 export const CODE = '7KQ2M9XT';
+export const TICKETSPICE_URL = 'https://www.ticketspice.com/?utm_source=google&utm_medium=search';
 export const DISCLOSURE = 'Limited showings in select cities. Confirm local theater availability prior to subscribing.';
 
 // The promo plan: All Access, billed like the live paywall, with the tickets attached.
