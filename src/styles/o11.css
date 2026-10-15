@@ -90,7 +90,6 @@
 .r11-t.gone { color: var(--dim); text-decoration: line-through; }
 .r11-few { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--red-ink); white-space: nowrap; }
 .r11-few i { inline-size: 6px; block-size: 6px; border-radius: 50%; background: currentColor; }
-.r11-bar { display: none; }
 .r11-go { height: 44px; padding-inline: 18px; font-size: 15px; }
 .r11-out { padding-inline: 18px; font-size: 14px; font-weight: 600; color: var(--dim); }
 .r11-go:not(:disabled):hover { background: #fff; }
@@ -355,18 +354,14 @@
   .zip-line .zip-form { flex: 1 1 100%; }
   .zip-line .zip-field { padding: 0 10px; }
   .f11-list { gap: 4px; }
-  /* Theater row, phone: the same row without the pin; distance becomes a bar against the 50-mile area */
+  /* Theater row, phone: the same row without the pin */
   /* the name line runs the full width so Few seats left fits beside it; the button sits by the lines below */
   .r11 { grid-template-columns: minmax(0, 1fr) auto; row-gap: 4px; padding-block: 18px; }
   .r11-main { display: contents; }
   .r11-name { grid-column: 1 / -1; }
-  .r11-meta, .r11-bar, .r11-times { grid-column: 1; }
-  .r11-go, .r11-out { grid-column: 2; grid-row: 2 / span 3; align-self: center; }
-  .r11-pin, .r11-dist { display: none; }
-  .r11-bar { display: flex; align-items: center; gap: 10px; margin-block: 4px 2px; font-size: 12px; line-height: 16px; color: var(--mute); font-variant-numeric: tabular-nums; }
-  .r11-bar b { position: relative; inline-size: 96px; block-size: 3px; border-radius: 2px; background: #262626; overflow: hidden; }
-  .r11-bar i { position: absolute; inset-block: 0; inset-inline-start: 0; border-radius: 2px; background: var(--ink); }
-  .r11.out .r11-bar i { background: var(--dim); }
+  .r11-meta, .r11-times { grid-column: 1; }
+  .r11-go, .r11-out { grid-column: 2; grid-row: 2 / span 2; align-self: center; }
+  .r11-pin { display: none; }
   /* times can wrap here: space instead of a separator, so no dot is left hanging at a line start */
   .r11-times { margin-block-start: 2px; column-gap: 14px; font-size: 13px; line-height: 18px; }
   .r11-t + .r11-t::before { display: none; }

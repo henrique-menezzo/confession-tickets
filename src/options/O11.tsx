@@ -2,7 +2,7 @@
 // The finder sits next to the poster, above the synopsis; Get tickets opens the DW ticket modal.
 // The page follows the single release date: before Nov 11, the day itself, and after.
 import { useEffect, useRef, useState } from 'react';
-import { ART, CAST, DATE, RADIUS, SAMPLE, SAMPLE_MORE, SYNOPSIS, allOut, isOut, type Theater } from '../data/data';
+import { ART, CAST, DATE, SAMPLE, SAMPLE_MORE, SYNOPSIS, allOut, isOut, type Theater } from '../data/data';
 import { useFlow, useTier } from '../store';
 import { Nav, Wordmark } from '../components/ShowPage';
 import { ListHead, ZipForm } from '../components/Finder';
@@ -84,9 +84,8 @@ function Hero({ onClaim }: { onClaim: () => void }) {
   );
 }
 
-/** One row for web and phone. Name first, then where and how far, then the times; seats and the
- *  action trail. Web keeps the pin and says the distance in words; phones draw it as a bar against
- *  the 50-mile screening area instead. */
+/** One row for web and phone. Name first, with seats beside it, then where and how far, then the
+ *  times; the action trails. The pin only shows on the web. */
 function Row({ t, near, delay, closest = false }: { t: Theater; near: boolean; delay?: number; closest?: boolean }) {
   const tier = useTier();
   const out = isOut(t);
@@ -97,9 +96,6 @@ function Row({ t, near, delay, closest = false }: { t: Theater; near: boolean; d
       <div className="r11-main">
         <p className="r11-name"><span>{t.name}</span>{few && <span className="r11-few"><i />Few seats left</span>}</p>
         <p className="r11-meta">{closest && <b>Closest · </b>}{t.city}{near && <span className="r11-dist"> · {t.miles} miles</span>}</p>
-        {near && (
-          <p className="r11-bar" aria-hidden><b><i style={{ inlineSize: `${Math.min(100, (t.miles / RADIUS) * 100)}%` }} /></b>{t.miles} mi</p>
-        )}
         <p className="r11-times">
           {t.shows.map((s) => <span key={s.id} className={'r11-t' + (s.status === 'out' ? ' gone' : '')}>{s.time}{s.format !== 'Standard' && <em> {s.format}</em>}</span>)}
         </p>
