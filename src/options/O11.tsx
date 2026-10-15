@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ART, CAST, DATE, SAMPLE, SAMPLE_MORE, SYNOPSIS, allOut, isOut, type Theater } from '../data/data';
 import { useFlow, useTier } from '../store';
 import { Nav, Wordmark } from '../components/ShowPage';
-import { ListHead, Searching, Status, ZipForm } from '../components/Finder';
+import { ListHead, Status, ZipForm } from '../components/Finder';
 import { Chat } from '../components/Chrome';
 import { openTickets, openWatch } from './TicketModal';
 import { Icon } from '../components/Icon';
@@ -141,6 +141,30 @@ function SoldOutNote() {
 
 const PAGE = 5;
 
+/** Loading: the same rows as the results, drawn as quiet bars. No boxes, same rules, same spacing. */
+function Skeleton() {
+  const zip = useFlow((s) => s.zip);
+  const widths = [[46, 30, 38], [38, 34, 26], [52, 28, 40], [42, 32, 30]];
+  return (
+    <div className="f11-list sk11" aria-live="polite" aria-busy="true">
+      <p className="sk11-head"><span className="sr-only">Finding theaters near {zip}</span><i style={{ width: 220 }} /></p>
+      <ul className="r11-list">
+        {widths.map(([a, b, c], i) => (
+          <li key={i} className="r11 sk11-row" style={{ ['--d' as string]: `${i * 90}ms` }}>
+            <i className="sk11-pin" />
+            <div className="r11-main">
+              <i style={{ width: `${a}%`, height: 14 }} />
+              <i style={{ width: `${b}%` }} />
+              <i style={{ width: `${c}%` }} />
+            </div>
+            <i className="sk11-btn" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function Finder() {
   const phase = useFlow((s) => s.phase);
   const found = useFlow((s) => s.found);
@@ -174,7 +198,7 @@ function Finder() {
         </p>
       </div>
       <div className="f11-search"><ZipForm variant="line" cta="Find theaters" locate={false} locateIcon auto iconGo /></div>
-      {phase === 'searching' && <Searching rows={4} />}
+      {phase === 'searching' && <Skeleton />}
       {phase === 'far' && <NoneNear />}
       {(phase === 'idle' || near) && (
         <div className="f11-list" key={found?.zip ?? 'sample'}>
